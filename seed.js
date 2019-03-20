@@ -1,7 +1,7 @@
 EcommerceStore = artifacts.require('./EcommerceStore.sol');
 
 module.exports = function(){
-    amt_1 = web3.utils.toWei('1', 'ether');
+    amt_1 = web3.toWei(1, 'ether');
     current_time = Math.round(new Date()/1000);
     EcommerceStore.deployed().then(i=>{i.addProductToStore('iphone 5', 'Cell Phones & Accessories', 'QmRQJ2vStY1ZrGs6hft3WGi5y8UcKaJe2bEr7ayActQAsd', 'QmbLRFj5U6UGTy3o9Zt8jEnVDuAw2GKzvrrv3RED9wyGRk', current_time, current_time + 300, 2*amt_1, 0).then(console.log)});
     EcommerceStore.deployed().then(i=>{i.addProductToStore('iphone 6s', 'Cell Phones & Accessories', 'QmbwvNNfuHUAXsR2hSruBTh7EjCACGw2tYxh3NGHzbFbWZ', 'QmbLRFj5U6UGTy3o9Zt8jEnVDuAw2GKzvrrv3RED9wyGRk', current_time, current_time + 600, 3*amt_1, 0).then(console.log)});

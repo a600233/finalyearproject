@@ -29,6 +29,7 @@ window.App = {
     var reader;
 
     $("#product-image").change(function(event) {
+      //onsole.log(test1); fortest
       const file = event.target.files[0]
       reader = new window.FileReader()
       reader.readAsArrayBuffer(file)
@@ -338,7 +339,7 @@ function buildProduct(product, id) {
   console.log(id);
   let node = $("<div/>");
   node.addClass("col-sm-3 text-center col-margin-bottom-1");
-  node.append("<img src='http://localhost:8080/ipfs/" + product[3] + "' width='150px' />");
+  node.append("<img src='http://localhost:8082/ipfs/" + product[3] + "' width='150px' />");
   node.append("<div>" + product[1] + "</div>");
   node.append("<div>" + product[2] + "</div>");
   node.append("<div>" + new Date(product[5] * 1000) + "</div>");

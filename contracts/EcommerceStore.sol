@@ -73,7 +73,7 @@ contract EcommerceStore {
   function revealBid(uint _productId, string _amount, string _secret) public {
     Product storage product = stores[productIdInStore[_productId]][_productId];
     require(now > product.auctionEndTime);
-    bytes32 sealedBid = keccak256(_amount, _secret);
+    bytes32 sealedBid = keccak256(_amount, _secret);//加密方法
     Bid memory bidInfo = product.bids[msg.sender][sealedBid];
     require(bidInfo.bidder > 0); //0xf55 uint160
     require(bidInfo.revealed == false);

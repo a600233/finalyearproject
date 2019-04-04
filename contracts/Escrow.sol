@@ -37,7 +37,7 @@ contract Escrow {
    UnlockAmount(productId, "release", caller);
   }
 
-  if (releaseCount == 2) {
+  if (releaseCount >= 2) {
    seller.transfer(amount);
    fundsDisbursed = true;
    DisburseAmount(productId, amount, seller);
@@ -52,7 +52,7 @@ contract Escrow {
    UnlockAmount(productId, "refund", caller);
   }
 
-  if (refundCount == 2) {
+  if (refundCount >= 2) {
    buyer.transfer(amount);
    fundsDisbursed = true;
    DisburseAmount(productId, amount, buyer);

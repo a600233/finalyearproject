@@ -2,7 +2,7 @@ import "../css/app.css";
 
 import {
   default as Web3
-} from 'web3';
+} from 'web3';//以太坊js接口
 import {
   default as contract
 } from 'truffle-contract'
@@ -12,6 +12,8 @@ var EcommerceStore = contract(ecommerce_store_artifacts);
 
 const ipfsAPI = require('ipfs-api');
 const ethUtil = require('ethereumjs-util');
+//const mongo = "http://localhost:3000";
+//const cate = ["Art","Books","Cameras","Cell Phones & Accessories","Clothing","Computers & Tablets","Gift Cards & Coupons","Musical Instruments & Gear","Pet Supplies","Pottery & Glass","Sporting Goods","Tickets","Toys & Hobbies","Video Games"];
 
 const ipfs = ipfsAPI({
   host: 'localhost',
@@ -23,28 +25,39 @@ window.App = {
   start: function() {
     var self = this;
 
-    EcommerceStore.setProvider(web3.currentProvider);
-    renderStore();
+    EcommerceStore.setProvider(web3.currentProvider);//matemask当前协议
+    renderStore();//渲染前端 把商品放到 主页。
 
-    var reader;
+    var reader;//图片读取器
 
     $("#product-image").change(function(event) {
       //onsole.log(test1); fortest
       const file = event.target.files[0]
-      reader = new window.FileReader()
+      reader = new window.FileReader()//新建一个
       reader.readAsArrayBuffer(file)
+      //此方法会按字节读取文件内容，并转换为ArrayBuffer对象。
+//readAsArrayBuffer读取文件后，会在内存中创建一个ArrayBuffer对象（二进制缓冲区），
+//将二进制数据存放在其中。通过此方式，可以直接在网络中传输二进制内容。
     });
 
-    $("#add-item-to-store").submit(function(event) {
+$("#add-item-to-store").submit(function(event) {
       const req = $("#add-item-to-store").serialize();
       let params = JSON.parse('{"' + req.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
       let decodedParams = {}
       Object.keys(params).forEach(function(v) {
         decodedParams[v] = decodeURIComponent(decodeURI(params[v]));
       });
-      saveProduct(reader, decodedParams);
+      saveProduct(reader, decodedParams);//保存图片和描述信息到
       event.preventDefault();
     });
+
+    if ($("#product-details").length > 0) {
+      console.log(window.location);
+      console.log("Search Params = " + new URLSearchParams(window.location))
+      let productId = new URLSearchParams(window.location.search).get('id');
+      console.log(productId);
+      renderProductDetails(productId);
+    }
 
     $("#finalize-auction").submit(function(event) {
       $("#msg").hide();
@@ -68,27 +81,20 @@ window.App = {
       event.preventDefault();
     });
 
-    if ($("#product-details").length > 0) {
-      console.log(window.location);
-      console.log("Search Params = " + new URLSearchParams(window.location))
-      let productId = new URLSearchParams(window.location.search).get('Id');
-      console.log(productId);
-      renderProductDetails(productId);
-    }
 
     $("#bidding").submit(function(event) {
-      $("#msg").hide();
+      $("#msg").hide();//进行投标
       let amount = $("#bid-amount").val();
       let sendAmount = $("#bid-send-amount").val();
       let secretText = $("#secret-text").val();
-      let sealedBid = '0x' + ethUtil.sha3(web3.toWei(amount, 'ether') + secretText).toString('hex');
+      let sealedBid = '0x' + ethUtil.keccak256(web3.toWei(amount, 'ether') + secretText).toString('hex');
       let productId = $("#product-id").val();
       console.log(sealedBid + " for " + productId);
       EcommerceStore.deployed().then(function(i) {
         i.bid(parseInt(productId), sealedBid, {
           value: web3.toWei(sendAmount),
           from: web3.eth.accounts[0],
-          gas: 440000
+          gas:  666666
         }).then(
           function(f) {
             $("#msg").html("Your bid has been successfully submitted!");
@@ -119,9 +125,36 @@ window.App = {
       });
       event.preventDefault();
     });
-  },
-};
 
+      /*  $("#release-funds").click(function() {
+        let productId = new URLSearchParams(window.location.search).get('id');
+        EcommerceStore.deployed().then(function(f) {
+          $("#msg").html("Your transaction has been submitted. Please wait for few
+          seconds for the confirmation").show();
+          console.log(productId);
+          f.releaseAmountToSeller(productId, {from: web3.eth.accounts[0], gas: 440000}).then(function(f) {
+            console.log(f);
+            location.reload();
+          }).catch(function(e) {
+            console.log(e);
+          })
+        });
+      });*/
+    $("#refund-funds").click(function() {
+      let productId = new URLSearchParams(window.location.search).get('id');
+      EcommerceStore.deployed().then(function(f) {
+        $("#msg").html("Your transaction has been submitted. Please wait for fewseconds for the confirmation").show();
+        f.refundAmountToBuyer(productId, {from: web3.eth.accounts[0], gas: 440000}).then(function(f) {
+          console.log(f);
+          location.reload();
+        }).catch(function(e) {
+          console.log(e);
+        })
+      });
+      alert("refund the funds!");
+    });
+},
+};
 
 
 function renderProductDetails(productId) {
@@ -130,14 +163,14 @@ function renderProductDetails(productId) {
       console.log(p);
       let content = "";
       ipfs.cat(p[4]).then(function(stream) {
-
+//读取图片哈希Utf8Array
         console.log(stream);
-        let content = Utf8ArrayToStr(stream);
+        let content = tostring(stream);//转化为string 可以试试 tostring
         $("#product-desc").append("<div>" + content + "</div>");
 
       });
 
-      $("#product-image").append("<img src='https://ipfs.io/ipfs/" + p[3] + "' width='250px' />");
+      $("#product-image").append("<img src='http://localhost:8082/ipfs/" + p[3] + "' width='250px' />");
       $("#product-price").html(displayPrice(p[7]));
       $("#product-name").html(p[1].name);
       $("#product-auction-end").html(displayEndHours(p[6]));
@@ -145,21 +178,42 @@ function renderProductDetails(productId) {
       $("#revealing, #bidding, #finalize-auction, #escrow-info").hide();
       let currentTime = getCurrentTimeInSeconds();
       if (parseInt(p[8]) == 1) {
-        $("#product-status").html("Product sold");
+        EcommerceStore.deployed().then(function(i) {
+          $("#escrow-info").show();
+          i.highestBidderInfo.call(productId).then(function(f) {
+          /*  if (f[2].toLocaleString() == '0') {
+              $("#product-status").html("Auction has ended. No bids were revealed");
+            } else {
+
+          }*/
+          $("#product-status").html("Auction has ended. Product sold to " + f[0]+ " for " + displayPrice(f[2]) + "The money is in the escrow. Two of the three participants (Buyer, Seller and Arbiter) have to " +"either release the funds to seller or refund the money to the buyer");
+        })
+        i.escrowInfo.call(productId).then(function(f) {
+          $("#buyer").html('Buyer: ' + f[0]);
+          $("#seller").html('Seller: ' + f[1]);
+          $("#arbiter").html('Arbiter: ' + f[2]);
+          if(f[3] == true) {
+            $("#release-count").html("Amount from the escrow has been released");
+          } else {
+            $("#release-count").html(f[4] + " of 3 participants have agreed to release funds");
+            $("#refund-count").html(f[5] + " of 3 participants have agreed to refund the buyer");
+          }
+        });
+      });//  $("#product-status").html("Product sold");
       } else if (parseInt(p[8]) == 2) {
         $("#product-status").html("Product was not sold");
       } else if (currentTime < parseInt(p[6])) {
-        $("#bidding").show();
+        $("#bidding").show();//揭标还是竞标！！！！
       } else if (currentTime < (parseInt(p[6]) + 600)) {
         $("#revealing").show();
       } else {
         $("#finalize-auction").show();
       }
-    })
-  })
+    });
+  });
 }
 
-
+//引用方法
 function Utf8ArrayToStr(array) {
   var out, i, len, c;
   var char2, char3;
@@ -206,20 +260,20 @@ function Utf8ArrayToStr(array) {
 
 
 function getCurrentTimeInSeconds() {
-  return Math.round(new Date() / 1000);
+  return Math.round(new Date() / 1000);//精确到秒
 }
 
-function displayPrice(amt) {
-  return 'Ξ' + web3.fromWei(amt, 'ether');
+function displayPrice(amount) {
+  return 'Ξ' + web3.fromWei(amount, 'ether');
 }
 
-
+//引用
 function displayEndHours(seconds) {
   let current_time = getCurrentTimeInSeconds()
   let remaining_seconds = seconds - current_time;
 
   if (remaining_seconds <= 0) {
-    return "Auction has ended";
+    return "Auction has finished";
   }
 
   let days = Math.trunc(remaining_seconds / (24 * 60 * 60));
@@ -232,42 +286,44 @@ function displayEndHours(seconds) {
   let minutes = Math.trunc(remaining_seconds / 60);
 
   if (days > 0) {
-    return "Auction ends in " + days + " days, " + hours + ", hours, " + minutes + " minutes";
+    return "Auction will finish in " + days + " days, " + hours + ", hours, " + minutes + " minutes";
   } else if (hours > 0) {
-    return "Auction ends in " + hours + " hours, " + minutes + " minutes ";
+    return "Auction will finish  in " + hours + " hours, " + minutes + " minutes ";
   } else if (minutes > 0) {
-    return "Auction ends in " + minutes + " minutes ";
+    return "Auction will finish  in " + minutes + " minutes ";
   } else {
-    return "Auction ends in " + remaining_seconds + " seconds";
+    return "Auction will finish  in " + remaining_seconds + " seconds";
   }
 }
 
 
 function saveProduct(reader, decodedParams) {
-  let imageId, descId;
+  let imgHash, desHash;
   saveImageOnIpfs(reader).then(function(id) {
-    imageId = id;
+    imgHash = id;//存储到imghash
     saveTextBlobOnIpfs(decodedParams["product-description"]).then(function(id) {
-      descId = id;
-      saveProductToBlockchain(decodedParams, imageId, descId);
+      desHash = id;
+      saveProductToBlockchain(decodedParams, imgHash, desHash);//覆盖之前描述信息和哈希
+      console.log("successfully!");
     })
   })
 }
 
-function saveProductToBlockchain(params, imageId, descId) {
+function saveProductToBlockchain(params, imgHash, desHash) {
   console.log(params);
   let auctionStartTime = Date.parse(params["product-auction-start"]) / 1000;
   let auctionEndTime = auctionStartTime + parseInt(params["product-auction-end"]) * 24 * 60 * 60
 
+//调用合约上传到区块链
   EcommerceStore.deployed().then(function(i) {
-    i.addProductToStore(params["product-name"], params["product-category"], imageId, descId, auctionStartTime,
+    i.addProductToStore(params["product-name"], params["product-category"], imgHash, desHash, auctionStartTime,
       auctionEndTime, web3.toWei(params["product-price"], 'ether'), parseInt(params["product-condition"]), {
         from: web3.eth.accounts[0],
         gas: 623164
       }).then(function(f) {
       console.log(f);
       $("#msg").show();
-      $("#msg").html("Your product was successfully added to your store!");
+      $("#msg").html("Your item has been added successfully!");
     })
   });
 }
@@ -288,10 +344,11 @@ function saveImageOnIpfs(reader) {
 
 function saveTextBlobOnIpfs(blob) {
   return new Promise(function(resolve, reject) {
-    const descBuffer = Buffer.from(blob, 'utf-8');
-    ipfs.add(descBuffer)
+    const description = Buffer.from(blob, 'utf-8');
+    ipfs.add(description)
       .then((response) => {
         console.log(response)
+        console.log("successfully!")
         resolve(response[0].hash);
       }).catch((err) => {
         console.error(err)
@@ -300,17 +357,33 @@ function saveTextBlobOnIpfs(blob) {
   })
 }
 
-function renderStore() {
-  EcommerceStore.deployed().then(function(i) {
+/*function renderProducts(div, filters) {
+ $.ajax({
+  url: mongo + "/products",
+  type: 'get',
+  contentType: "application/json; charset=utf-8",
+  data: filters
+ }).done(function(data) {
+  if (data.length == 0) {
+   $("#" + div).html('No products found');
+  } else {
+   $("#" + div).html('');
+  }
+  while(data.length > 0) {
+   let chunks = data.splice(0, 4);
+   let row = $("<div/>");
+   row.addClass("row");
+   chunks.forEach(function(value) {
+    let node = buildProduct(value);
+    row.append(node);
+   })
+   $("#" + div).append(row);
+  }
+ })
+}*/
 
-    // i.productIndex().then((number) => {
-    //   console.log("产品数量" + number);
-    //   for (var k = 0; k < number; k++) {
-    //     i.getProduct(k + 1).then(function(p) {
-    //       $("#product-list").append(buildProduct(p, k + 1));
-    //     });
-    //   }
-    // });
+function renderStore() {
+  EcommerceStore.deployed().then(function(i) { //调用合约
     i.getProduct(1).then(function(p) {
       $("#product-list").append(buildProduct(p, 1));
     });
@@ -320,18 +393,15 @@ function renderStore() {
     i.getProduct(3).then(function(p) {
       $("#product-list").append(buildProduct(p, 3));
     });
-    i.getProduct(4).then(function(p) {
-      $("#product-list").append(buildProduct(p, 4));
-    });
-    i.getProduct(5).then(function(p) {
-      $("#product-list").append(buildProduct(p, 5));
-    });
-    i.getProduct(6).then(function(p) {
-      $("#product-list").append(buildProduct(p, 6));
-    });
 
 
   });
+/*  renderProducts("product-list", {});
+  renderProducts("product-reveal-list", {productStatus: "reveal"});
+  renderProducts("product-finalize-list", {productStatus: "finalize"});
+  cate.forEach(function(content) {
+   $("#categories").append("<div>" + content + "");
+ })*/
 }
 
 function buildProduct(product, id) {
@@ -340,6 +410,7 @@ function buildProduct(product, id) {
   let node = $("<div/>");
   node.addClass("col-sm-3 text-center col-margin-bottom-1");
   node.append("<img src='http://localhost:8082/ipfs/" + product[3] + "' width='150px' />");
+  console.log(product[3]);
   node.append("<div>" + product[1] + "</div>");
   node.append("<div>" + product[2] + "</div>");
   node.append("<div>" + new Date(product[5] * 1000) + "</div>");

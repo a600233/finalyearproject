@@ -219,7 +219,7 @@ function renderProductDetails(productId) {
 }
 
 //引用方法
-function Utf8ArrayToStr(array) {
+/*function Utf8ArrayToStr(array) {
   var out, i, len, c;
   var char2, char3;
 
@@ -313,7 +313,7 @@ function utf82str(utf)
         }
 
         return str;
-    }
+    }*/
 
 
 function getCurrentTimeInSeconds() {

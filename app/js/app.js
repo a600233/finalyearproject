@@ -54,7 +54,7 @@ $("#add-item-to-store").submit(function(event) {
     if ($("#product-details").length > 0) {
       console.log(window.location);
       console.log("Search Params = " + new URLSearchParams(window.location))
-      let productId = new URLSearchParams(window.location.search).get('id');
+      let productId = new URLSearchParams(window.location.search).get('Id');
       console.log(productId);
       renderProductDetails(productId);
     }

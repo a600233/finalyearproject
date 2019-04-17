@@ -1,4 +1,4 @@
-pragma solidity ^ 0.4 .18;
+pragma solidity ^0.4.18;
 
 import "contracts/Escrow.sol";
 
@@ -24,20 +24,34 @@ contract EcommerceStore {
   }
 
   struct Product {
-    uint id; //产品id
-    string name; //产品名字
-    string category; //分类
-    string imageLink; //图片hash
-    string descLink; //图片描述信息的hash
-    uint auctionStartTime; //开始竞标的时间
-    uint auctionEndTime; // 竞标结束时间
-    uint startPrice; // 拍卖价格
-    address highestBidder; // 赢家的钱包地址
-    uint highestBid; // 赢家竞标的价格
-    uint secondHighestBid; // 第二高的这个人的地址
-    uint totalBids; // 一共有多少人参与竞标
-    ProductStatus status; //状态
-    ProductCondition condition; // 新、旧
+    // 产品id
+    uint id;
+    // 产品名字
+    string name;
+    // 分类
+    string categories;
+    // 图片hash
+    string pictureHash;
+    // 图片描述信息的hash
+    string descriptionHash;
+    // 开始竞标的时间
+    uint startTime;
+    // 竞标结束时间
+    uint endTime; 
+    // 起拍价格
+    uint startingPrice;
+    // 赢家的钱包地址
+    address highestBidder;
+    // 赢家竞标的价格
+    uint highestBid;
+    // 第二高的这个人的地址
+    uint secondHighestBid;
+    // 一共有多少人参与竞标
+    uint totalBids;
+    // 状态
+    ProductStatus status;
+    // 新、旧
+    ProductCondition condition;
     mapping(address => mapping(bytes32 => Bid)) bids;
   }
 
@@ -45,60 +59,111 @@ contract EcommerceStore {
     productIndex = 0;
   }
 
-  /*  添加产品到区块链*/
-  function addProductToStore(string _name, string _category, string _imageLink, string _descLink, uint _auctionStartTime, uint _auctionEndTime, uint _startPrice, uint _productCondition) public {
-    require(_auctionStartTime < _auctionEndTime);
+  // 添加产品到区块链
+  function addProduct(
+    string _name,
+    string _categories,
+    string _pictureHash,
+    string _descriptionHash,
+    uint _startTime,
+    uint _endTime,
+    uint _startingPrice,
+    uint _productCondition
+  ) public {
+    require(_startTime < _endTime);
     productIndex += 1;
-    Product memory product = Product(productIndex, _name, _category, _imageLink, _descLink, _auctionStartTime, _auctionEndTime, _startPrice, 0, 0, 0, 0, ProductStatus.Open, ProductCondition(_productCondition));
+    Product memory product = Product(
+      productIndex,
+      _name,
+      _categories,
+      _pictureHash,
+      _descriptionHash,
+      _startTime,
+      _endTime,
+      _startingPrice,
+      0,
+      0,
+      0,
+      0,
+      ProductStatus.Open,
+      ProductCondition(_productCondition)
+    );
     stores[msg.sender][productIndex] = product;
     productIdInStore[productIndex] = msg.sender;
   }
-  /* 通过产品ID读取产品信息 */
-  function getProduct(uint _productId) view public returns(uint, string, string, string, string, uint, uint, uint, ProductStatus, ProductCondition) {
+
+  // 根据产品ID获取产品详情
+  function getProductDetail(uint _productId) view public returns(
+    uint,
+    string,
+    string,
+    string,
+    string,
+    uint,
+    uint,
+    uint,
+    ProductStatus,
+    ProductCondition
+  ) {
     Product memory product = stores[productIdInStore[_productId]][_productId];
-    return (product.id, product.name, product.category, product.imageLink, product.descLink, product.auctionStartTime, product.auctionEndTime, product.startPrice, product.status, product.condition);
+    return (
+      product.id,
+      product.name,
+      product.categories,
+      product.pictureHash,
+      product.descriptionHash,
+      product.startTime,
+      product.endTime,
+      product.startingPrice,
+      product.status,
+      product.condition
+    );
   }
 
+  // 出价
   function bid(uint _productId, bytes32 _bid) payable public returns(bool) {
     Product storage product = stores[productIdInStore[_productId]][_productId];
-    require(now >= product.auctionStartTime);
-    require(now <= product.auctionEndTime);
-    require(msg.value > product.startPrice);
+    require(now >= product.startTime);
+    require(now <= product.endTime);
+    require(msg.value > product.startingPrice);
     require(product.bids[msg.sender][_bid].bidder == 0);
     product.bids[msg.sender][_bid] = Bid(msg.sender, _productId, msg.value, false);
     product.totalBids += 1;
     return true;
   }
 
-  function revealBid(uint _productId, string _amount, string _secret) public {
+  // 揭示出价
+  function revealBid(
+    uint _productId,
+    string _amount,
+    string _secret
+  ) public {
     Product storage product = stores[productIdInStore[_productId]][_productId];
-    require(now > product.auctionEndTime);
-    bytes32 sealedBid = keccak256(_amount, _secret);//加密方法
+    require(now > product.endTime);
+    bytes32 sealedBid = keccak256(_amount, _secret);// 加密bid
     Bid memory bidInfo = product.bids[msg.sender][sealedBid];
     require(bidInfo.bidder > 0); //0xf55 uint160
     require(bidInfo.revealed == false);
     uint refund; // 退款
     uint amount = stringToUint(_amount);
-    if (bidInfo.value < amount) { //mask  < actual
+    if (bidInfo.value < amount) {
       refund = bidInfo.value;
     } else {
       if (address(product.highestBidder) == 0) {
         product.highestBidder = msg.sender;
         product.highestBid = amount;
-        product.secondHighestBid = product.startPrice;
-        refund = bidInfo.value - amount; // mask 20 actual 10.5
+        product.secondHighestBid = product.startingPrice;
+        refund = bidInfo.value - amount;
       } else {
-        // 15  mask 25
         if (amount > product.highestBid) {
           product.secondHighestBid = product.highestBid;
           product.highestBidder.transfer(product.highestBid);
           product.highestBidder = msg.sender;
-          product.highestBid = amount; //15
-          refund = bidInfo.value - amount; // 20 - 15
+          product.highestBid = amount;
+          refund = bidInfo.value - amount;
         } else if (amount > product.secondHighestBid) {
-          // 13   18
-          product.secondHighestBid = amount; //13
-          refund = amount; //
+          product.secondHighestBid = amount;
+          refund = amount;
         } else {
           refund = amount;
         }
@@ -110,11 +175,21 @@ contract EcommerceStore {
     }
   }
 
-  function highestBidderInfo(uint _productId) view public returns(address, uint, uint) {
+  // 最高出价者的信息
+  function highestBidderInfo(uint _productId) view public returns(
+    address,
+    uint,
+    uint
+  ) {
     Product memory product = stores[productIdInStore[_productId]][_productId];
-    return (product.highestBidder, product.highestBid, product.secondHighestBid);
+    return (
+      product.highestBidder,
+      product.highestBid,
+      product.secondHighestBid
+    );
   }
 
+  // 总的出价数
   function totalBids(uint _productId) view public returns(uint) {
     Product memory product = stores[productIdInStore[_productId]][_productId];
     return product.totalBids;
@@ -131,10 +206,11 @@ contract EcommerceStore {
     return result;
   }
 
-  function finalizeAuction(uint _productId) public {
+  // 完成拍卖
+  function finishAuction(uint _productId) public {
     Product memory product = stores[productIdInStore[_productId]][_productId];
 
-    require(now > product.auctionEndTime);
+    require(now > product.endTime);
     require(product.status == ProductStatus.Open);
     require(product.highestBidder != msg.sender);
     require(productIdInStore[_productId] != msg.sender);
@@ -142,29 +218,43 @@ contract EcommerceStore {
     if (product.totalBids == 0) {
       product.status = ProductStatus.Unsold;
     } else {
-
-      Escrow escrow = (new Escrow).value(product.secondHighestBid)(_productId, product.highestBidder, productIdInStore[_productId], msg.sender);
+      Escrow escrow = (new Escrow).value(product.secondHighestBid)(
+        _productId,
+        product.highestBidder,
+        productIdInStore[_productId],
+        msg.sender
+      );
       productEscrow[_productId] = address(escrow);
       product.status = ProductStatus.Sold;
 
       uint refund = product.highestBid - product.secondHighestBid;
       product.highestBidder.transfer(refund);
-
     }
   }
 
+  // 产品托管地址
   function escrowAddressForProduct(uint _productId) view public returns(address) {
     return productEscrow[_productId];
   }
 
-  function escrowInfo(uint _productId) view public returns(address, address, address, bool, uint, uint) {
+  // 托管信息
+  function escrowInfo(uint _productId) view public returns(
+    address,
+    address,
+    address,
+    bool,
+    uint,
+    uint
+  ) {
     return Escrow(productEscrow[_productId]).escrowInfo();
   }
 
+  // 向卖方发放金额
   function releaseAmountToSeller(uint _productId) public {
     Escrow(productEscrow[_productId]).releaseAmountToSeller(msg.sender);
   }
 
+  // 退款金额给买方
   function refundAmountToBuyer(uint _productId) public {
     Escrow(productEscrow[_productId]).refundAmountToBuyer(msg.sender);
   }

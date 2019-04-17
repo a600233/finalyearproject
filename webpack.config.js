@@ -7,12 +7,17 @@ module.exports = {
     path: path.resolve(__dirname, 'build'),
     filename: 'app.js'
   },
+  devServer: {
+    host:'127.0.0.1',
+    port:8080
+  },
   plugins: [
     // Copy our app's index.html to the build folder.
     new CopyWebpackPlugin([
       { from: './app/index.html', to: "index.html" },
       { from: './app/list.html', to: "list.html" },
       { from: './app/product.html', to: "product.html" },
+      { from: './app/reveal.html', to: "reveal.html" }
     ])
   ],
   module: {

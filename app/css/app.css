@@ -148,8 +148,26 @@ a {
 }
 
 #product-details-page button.form-submit {
-  background-color: #01bf86;
-  color: white;
+  width: 100px;
+  padding: 12px;
+  font-size: 20px;
+  margin: auto;
+  text-decoration: none;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  border: solid 0.5px white;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  color: #fff;
+  background-color:#d35400;
+  transition: all 500ms;
+  -webkit-transition: all 500ms;
+  -moz-transition: all 500ms;
+  z-index: 1;
 }
 
 #product-details-page #product-desc {
@@ -257,6 +275,45 @@ a {
   transition: all 0.8s
 }
 #finalize-auction button[type='submit']:active:after {
+  padding: 0;
+  margin: 0;
+  opacity: 1;
+  transition: 0s
+}
+.btn-thrid-par{
+  position: relative;
+  background-color:#d35400;
+  border: none;
+  padding: 16px;
+  width: 220px;
+  text-align: center;
+  color:#fff;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+  text-decoration: none;
+  overflow: hidden;
+  border-radius: 4px;
+  bottom: 0;
+  margin-right: 120px;
+}
+.btn-thrid-par:hover {
+  background:#fff;
+  box-shadow:0px 2px 10px 5px #97B1BF;
+  color:#000;
+}
+.btn-thrid-par:after {
+  content: "";
+  background: #d35400;
+  display: block;
+  position: absolute;
+  padding-top: 300%;
+  padding-left: 350%;
+  margin-left: -20px !important;
+  margin-top: -120%;
+  opacity: 0;
+  transition: all 0.8s
+}
+.btn-thrid-par:active:after {
   padding: 0;
   margin: 0;
   opacity: 1;

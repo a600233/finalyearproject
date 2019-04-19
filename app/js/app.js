@@ -44,7 +44,7 @@ window.Utils = {
         // 产品图片
         $("#product-image").append("<img src='" + config.ipfs.base + p[3] + "' />");
         // 产品价格
-        $("#product-price").html(Utils.displayPrice(p[7]));
+        $("#product-price").html(Utils.getEth(p[7]));
         // 产品名称
         $("#product-name").html(p[1]);
           console.log(p[1]);
@@ -54,20 +54,19 @@ window.Utils = {
         $("#product-id").val(p[0]);
         $("#revealing, #bidding, #finalize-auction, #after-sale").hide();
         let currentTime = Utils.getCurrentTimeInSeconds();
-        if (parseInt(p[8]) == 1) {
+        if (parseInt(p[8]) == 1) {//Sold
           EcommerceStore.deployed().then(function(i) {
-            $("#after-sale").show();
+            $("#thrid-party").show();
             i.highestBidderInfo.call(productId).then(function(f) {
-                if (f[2].toLocaleString() == '0') {
-                  $("#final-result-fai").append("None of the bids were successful").show();
-                } else {
-                $("#final-result-sec").append(" He or she (" + f[0]+ ") win the bid with" + Utils.displayPrice(f[2]) + "!").show();
-              }
+
+                $("#final-result-sec").append(" He or she (" + f[0]+ ") win the bid with" + Utils.getEth(f[2]) + "!").show();
+
             })
             i.escrowInfo.call(productId).then(function(f) {
-              $("#bid-address-3").append(f[0]+ '------------------------> Bidder'+ ' \r\n ').show();
-              $("#bid-address-3").append(' \r\r\r\r\r\r\r\r\r\r\r\r '+ f[1] +'------------------------> Seller').show();
-              $("#bid-address-3").append(' \r\n '+ f[2]+'------------------------> The Third Party').show();
+
+              $("#final-result-sec").append('<p><strong>ADDRESS FOR THIS AUCTION:</strong></p><p>'+ f[0]+ '------------------------> Bidder</p>').show();
+              $("#final-result-sec").append('<p>'+ f[1] +'------------------------> Seller</p>').show();
+              $("#final-result-sec").append('<p>'+ f[2]+'------------------------> The Third Party</p>').show();
               if(f[3] == true) {
                 $("#successful").show();
                 $("#successful").html("Amount from the escrow has been released");
@@ -78,16 +77,17 @@ window.Utils = {
             });
           });
         } else if (parseInt(p[8]) == 2) {
-          $("#wrong").append("Item was not sold").show();
+          $("#wrong").append("Abortive Auction!").show();//unsold
         } else if (currentTime < p[5]) {
           // 拍卖未开始
           $("#waiting").show();
+          alert("The auction hasn't started yet!");
         } else if (currentTime < parseInt(p[6])) {
           $("#bidding").show();//揭标还是竞标！！！！
         } else if (currentTime < (parseInt(p[6]) + 120)) {
           $("#revealing").show();//揭标时间
         } else {
-          $("#finalize-auction").show();
+          $("#finalize-auction").show();//当前时间大于拍卖结束时间
         }
       });
     });
@@ -102,7 +102,7 @@ window.Utils = {
    * 展示价格
    * @param {String} amt
    */
-  displayPrice: function(amt) {
+  getEth: function(amt) {
     return ' ' + web3.fromWei(amt, 'ether')+' ETH';//Ξ
   },
   /**
@@ -162,8 +162,9 @@ window.Utils = {
    */
   saveProductToBlockchain: function(params, imageId, descId) {
     let startTime = Date.parse(params['product-auction-start']) / 1000;
+    let auctionDuration = parseInt(params['product-auction-end']) * 24 * 60 * 60;
     let endTime =
-      startTime + parseInt(params['product-auction-end']) * 24 * 60 * 60;
+      startTime + auctionDuration;
 
     EcommerceStore.deployed().then(function(i) {
       i.addProduct(
@@ -177,14 +178,20 @@ window.Utils = {
         parseInt(params['product-condition']),
         {
           from: web3.eth.accounts[0],
-          gas: 623164,
+          gas: 666666,
         },
       ).then(function(f) {
         $('#successful').show();
-        $('#successful').html('Your product was successfully added to your store!');
+        $('#successful').html('Your auction was hold successfully!');
         setTimeout(() => {
           location.href = './index.html';
         }, 1000);
+      }).catch(err => {
+        reject(err);
+        $('#wrong').show();
+        $('#wrong').html(
+          'THERE IS AN ERROR IN LISTING A ITEM!',
+        );
       });
     });
   },
@@ -275,14 +282,14 @@ window.Utils = {
                       <img src="${config.ipfs.base}${product[3]}" class="image1" />
                     </div>
                     <div class="title">
-                      <div class="time">${new Date(product[5] * 1000)}</div>
-                      <div class="price">${Utils.displayPrice(product[7])}</div>
+                      <div class="price">${Utils.getEth(product[7])}</div>
                       <div>
                           ${product[1]}
                       </div>
                       <div class="type">
                           ${product[2]}
                       </div>
+                      <div class="time">${new Date(product[5] * 1000)}</div>
                     </div>
                   </a>`;
     return dom;
@@ -372,7 +379,7 @@ window.App = {
         i.bid(parseInt(productId), sealedBid, {
           value: web3.toWei(sendAmount),
           from: web3.eth.accounts[0],
-          gas: 666666,
+          gas: 233333,
         }).then(function(f) {
           $('#successful').html('Your bid has been successfully submitted!');
           $('#successful').show();
@@ -398,7 +405,7 @@ window.App = {
           secretPhraseRev,
           {
             from: web3.eth.accounts[0],
-            gas: 440000,
+            gas: 233333,
           },
         ).then(function(f) {
           $('#successful').show();
@@ -408,12 +415,12 @@ window.App = {
       });
       event.preventDefault();
     });
-    $("#release-funds").click(function() {
+    $("#for-seller").click(function() {
       let productId = new URLSearchParams(window.location.search).get('id');
       EcommerceStore.deployed().then(function(f) {
-        $("#warning").html("Your transaction has been submitted. Please wait for few seconds for the confirmation").show();
+        $("#warning").html("Please be patient for a moment.").show();
         console.log(productId);
-        f.releaseAmountToSeller(productId, {from: web3.eth.accounts[0], gas: 440000}).then(function(f) {
+        f.releaseAmountToSeller(parseInt(productId), {from: web3.eth.accounts[0], gas: 233333}).then(function(f) {
           console.log(f);
           location.reload();
         }).catch(function(e) {
@@ -425,11 +432,11 @@ window.App = {
         })
       });
     });
-    $("#refund-funds").click(function() {
+    $("#for-bidder").click(function() {
       let productId = new URLSearchParams(window.location.search).get('id');
       EcommerceStore.deployed().then(function(f) {
-        $("#warning").html("Your transaction has been submitted. Please wait for fewseconds for the confirmation").show();
-        f.refundAmountToBuyer(productId, {from: web3.eth.accounts[0], gas: 440000}).then(function(f) {
+        $("#warning").html("Please be patient for a moment.").show();
+        f.refundAmountToBuyer(parseInt(productId), {from: web3.eth.accounts[0], gas: 233333}).then(function(f) {
           console.log(f);
           location.reload();
         }).catch(function(e) {

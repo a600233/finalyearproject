@@ -69,7 +69,7 @@ contract Escrow {
 
   // 向卖方发放金额
   function releaseAmountToSeller(address caller) public {
-    require(!fundsDisbursed);
+    require(!fundsDisbursed, 'releaseAmountToSeller error');
     if ((caller == buyer ||
         caller == seller ||
         caller == arbiter) &&
@@ -88,7 +88,7 @@ contract Escrow {
 
   // 退款金额给买方
   function refundAmountToBuyer(address caller) public {
-    require(!fundsDisbursed);
+    require(!fundsDisbursed, 'refundAmountToBuyer error');
     if ((caller == buyer ||
         caller == seller ||
         caller == arbiter) &&

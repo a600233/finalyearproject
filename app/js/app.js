@@ -388,6 +388,9 @@ window.App = {
           const localMsg = localStorage.getItem('BidMsg:' + productId);
           localStorage.setItem('BidMsg' + productId, localMsg ? localMsg + msg : msg);
           $("#bid-msg").append(msg).show();
+          $('#actual-bid-amount').val('');
+          $('#bid-mask').val('');
+          $('#secret-phrase').val('');
         });
       });
       event.preventDefault();
@@ -410,12 +413,14 @@ window.App = {
         ).then(function(f) {
           $('#successful').show();
           $('#successful').html('Your bid has been successfully revealed!');
+          $('#secret-phrase-revealt').val('');
+          $('#actual-amount').val('');
           console.log(f);
         });
       });
       event.preventDefault();
     });
-    $("#for-seller").click(function() {
+    $("#for-seller").click(function() {//给钱
       let productId = new URLSearchParams(window.location.search).get('id');
       EcommerceStore.deployed().then(function(f) {
         $("#warning").html("Please be patient for a moment.").show();
@@ -432,7 +437,7 @@ window.App = {
         })
       });
     });
-    $("#for-bidder").click(function() {
+    $("#for-bidder").click(function() {//退款给
       let productId = new URLSearchParams(window.location.search).get('id');
       EcommerceStore.deployed().then(function(f) {
         $("#warning").html("Please be patient for a moment.").show();

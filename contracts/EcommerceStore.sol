@@ -37,7 +37,7 @@ contract EcommerceStore {
     // 开始竞标的时间
     uint startTime;
     // 竞标结束时间
-    uint endTime; 
+    uint endTime;
     // 起拍价格
     uint startingPrice;
     // 赢家的钱包地址
@@ -208,7 +208,7 @@ contract EcommerceStore {
 
   // 完成拍卖
   function finishAuction(uint _productId) public {
-    Product memory product = stores[productIdInStore[_productId]][_productId];
+    Product storage product = stores[productIdInStore[_productId]][_productId];
 
     require(now > product.endTime);
     require(product.status == ProductStatus.Open);

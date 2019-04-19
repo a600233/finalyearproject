@@ -38,50 +38,54 @@ window.Utils = {
             $("#product-desc").append("<div>" + content+ "</div>");
           });
         });
-
+        // bids
+        const msg = localStorage.getItem('BidMsg' + productId);
+        msg && $("#bid-msg").append(msg).show();
         // 产品图片
         $("#product-image").append("<img src='" + config.ipfs.base + p[3] + "' />");
         // 产品价格
         $("#product-price").html(Utils.displayPrice(p[7]));
         // 产品名称
-        $("#product-name").html(p[1].name);
+        $("#product-name").html(p[1]);
+          console.log(p[1]);
         // 拍卖结束时间
-        $("#product-auction-end").html(Utils.displayEndHours(p[6]));
+        $("#product-auction-end").html(Utils.countDownDate(p[6]));
         // 产品ID
         $("#product-id").val(p[0]);
-        $("#revealing, #bidding, #finalize-auction, #escrow-info").hide();
+        $("#revealing, #bidding, #finalize-auction, #after-sale").hide();
         let currentTime = Utils.getCurrentTimeInSeconds();
         if (parseInt(p[8]) == 1) {
           EcommerceStore.deployed().then(function(i) {
-            $("#escrow-info").show();
+            $("#after-sale").show();
             i.highestBidderInfo.call(productId).then(function(f) {
-               /*if (f[2].toLocaleString() == '0') {
-                  $("#product-status").html("Auction has ended. No bids were revealed");
+                if (f[2].toLocaleString() == '0') {
+                  $("#final-result-fai").append("None of the bids were successful").show();
                 } else {
-              }*/
-              $("#product-status").html("Auction has ended. Product sold to " + f[0]+ " for " + Utils.displayPrice(f[2]) + "The money is in the escrow. Two of the three participants (Buyer, Seller and Arbiter) have to " +"either release the funds to seller or refund the money to the buyer");
-            });
+                $("#final-result-sec").append(" He or she (" + f[0]+ ") win the bid with" + Utils.displayPrice(f[2]) + "!").show();
+              }
+            })
             i.escrowInfo.call(productId).then(function(f) {
-              $("#buyer").html('Buyer: ' + f[0]);
-              $("#seller").html('Seller: ' + f[1]);
-              $("#arbiter").html('Arbiter: ' + f[2]);
+              $("#bid-address-3").append(f[0]+ '------------------------> Bidder'+ ' \r\n ').show();
+              $("#bid-address-3").append(' \r\r\r\r\r\r\r\r\r\r\r\r '+ f[1] +'------------------------> Seller').show();
+              $("#bid-address-3").append(' \r\n '+ f[2]+'------------------------> The Third Party').show();
               if(f[3] == true) {
-                $("#release-count").html("Amount from the escrow has been released");
+                $("#successful").show();
+                $("#successful").html("Amount from the escrow has been released");
               } else {
                 $("#release-count").html(f[4] + " of 3 participants have agreed to release funds");
                 $("#refund-count").html(f[5] + " of 3 participants have agreed to refund the buyer");
               }
             });
-          });//  $("#product-status").html("Product sold");
+          });
         } else if (parseInt(p[8]) == 2) {
-          $("#product-status").html("Item was not sold");
+          $("#wrong").append("Item was not sold").show();
         } else if (currentTime < p[5]) {
           // 拍卖未开始
           $("#waiting").show();
         } else if (currentTime < parseInt(p[6])) {
           $("#bidding").show();//揭标还是竞标！！！！
-        } else if (currentTime < (parseInt(p[6]) + 600)) {
-          $("#revealing").show();
+        } else if (currentTime < (parseInt(p[6]) + 120)) {
+          $("#revealing").show();//揭标时间
         } else {
           $("#finalize-auction").show();
         }
@@ -99,15 +103,15 @@ window.Utils = {
    * @param {String} amt
    */
   displayPrice: function(amt) {
-    return ' '+web3.fromWei(amt, 'ether')+ ' ETH';//'Ξ'
+    return ' ' + web3.fromWei(amt, 'ether')+' ETH';//Ξ
   },
   /**
    * 显示结束时间
    * @param {Number} seconds 秒
    */
-  displayEndHours: function(seconds) {
+  countDownDate: function(duration) {
     let now = Utils.getCurrentTimeInSeconds();
-    let distance = seconds - now;
+    let distance = duration - now;
     if (distance <= 0) {
       return 'EXPIRED';
     }
@@ -116,26 +120,23 @@ window.Utils = {
     let hours = Math.trunc(distance / (60 * 60));
     distance -= hours * 60 * 60;
     let minutes = Math.trunc(distance / 60);
-  /*  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      var seconds = Math.floor((distance % (1000 * 60)) / 1000);*/
+
     if (days > 0) {
       return (
         'Auction will close in ' +
         days +
         ' days ' +
         hours +
-        ', hours ' +
+        ' hours ' +
         minutes +
         ' minutes'
       );
     } else if (hours > 0) {
       return 'Auction will close in ' + hours + ' hours ' + minutes + ' minutes ';
     } else if (minutes > 0) {
-      return 'Auction will close  in ' + minutes + ' minutes ';
+      return 'Auction will close in ' + minutes + ' minutes ';
     } else {
-      return 'Auction will close  in ' + distance + ' seconds';
+      return 'Auction will close in ' + distance + ' seconds';
     }
   },
   /**
@@ -201,6 +202,10 @@ window.Utils = {
         })
         .catch(err => {
           reject(err);
+          $('#wrong').show();
+          $('#wrong').html(
+            'THERE IS AN ERROR IN IPFS!',
+          );
         });
     });
   },
@@ -218,12 +223,16 @@ window.Utils = {
         })
         .catch(err => {
           reject(err);
+          $('#wrong').show();
+          $('#wrong').html(
+            'THERE IS AN ERROR IN IPFS!',
+          );
         });
     });
   },
   // 渲染分类
   renderCategories: function() {
-    const categories = ["All", "Art","Books","Cameras","Cell Phones & Accessories","Clothing","Computers & Tablets","Gift Cards & Coupons","Musical Instruments & Gear","Pet Supplies","Pottery & Glass","Sporting Goods","Tickets","Toys & Hobbies","Video Games"];
+    const categories = ["All", "Arts & Crafts","Automotive","Baby","Beauty & Personal Care","Books","Computers","Electronics","Women Fashion","Men Fashion","Girls Fashion","Boys Fashion","Health & Household","Home & Kitchen","Industrial & Scientific","Luggage","Movies & Television","Pet Supplies","Sports & Outdoors","Tools & Home Improvement","Toys","Video Games"];
     let ul = '<ul>';
     for(let i = 0, length = categories.length; i < length; i++) {
       ul += `<li><button class="btn btn-default">${categories[i]}</button></li>`;
@@ -243,22 +252,16 @@ window.Utils = {
   renderStore: function() {
     EcommerceStore.deployed().then(function(i) {
       i.productIndex().then((number) => {
-        $('#total-products').html('' + number);
+        $('#item-num').html('' + number);
         for (let j = 0; j < number; j++) {
           i.getProductDetail(j + 1).then(function(p) {
             $("#product-list .blogposts").append(Utils.buildProduct(p, j + 1));
+            if (p[6] < new Date/1000) {
+              $("#product-reveal-list .blogposts").append(Utils.buildProduct(p, j + 1));
+            }
           });
         }
       });
-      // i.getProductDetail(1).then(function(p) {
-      //   $("#product-list .blogposts").append(Utils.buildProduct(p, 1));
-      // });
-      // i.getProductDetail(2).then(function(p) {
-      //   $("#product-list .blogposts").append(Utils.buildProduct(p, 2));
-      // });
-      // i.getProductDetail(3).then(function(p) {
-      //   $("#product-list .blogposts").append(Utils.buildProduct(p, 3));
-      // });
     });
   },
   /**
@@ -268,6 +271,9 @@ window.Utils = {
    */
   buildProduct: function(product, id) {
     const dom = `<a href="product.html?Id=${id}" class="blogpost" type="${product[2]}">
+                    <div class="image">
+                      <img src="${config.ipfs.base}${product[3]}" class="image1" />
+                    </div>
                     <div class="title">
                       <div class="time">${new Date(product[5] * 1000)}</div>
                       <div class="price">${Utils.displayPrice(product[7])}</div>
@@ -277,9 +283,6 @@ window.Utils = {
                       <div class="type">
                           ${product[2]}
                       </div>
-                    </div>
-                    <div class="image">
-                      <img src="${config.ipfs.base}${product[3]}" class="image1" />
                     </div>
                   </a>`;
     return dom;
@@ -329,8 +332,8 @@ window.App = {
           from: web3.eth.accounts[0],
         })
           .then(function(f) {
-            $('#successful').show();
-            $('#successful').html(
+            $('#warning').show();
+            $('#warning').html(
               'The auction has been finalized and winner declared.',
             );
             console.log(f);
@@ -340,7 +343,7 @@ window.App = {
             console.log(e);
             $('#wrong').show();
             $('#wrong').html(
-              'The auction can not be finalized by the buyer or seller, only a third party aribiter can finalize it',
+              'Auctions can only be concluded by a third party!',
             );
           });
       });
@@ -355,13 +358,13 @@ window.App = {
 
     $('#bidding').submit(function(event) {
       $('#successful').hide();
-      let amount = $('#actural-bid-amount').val();
-      let sendAmount = $('#bid-send-amount').val();
-      let secretText = $('#secret-text').val();
+      let amount = $('#actual-bid-amount').val();
+      let sendAmount = $('#bid-mask').val();
+      let secretPhraseBid = $('#secret-phrase').val();
       let sealedBid =
         '0x' +
         ethUtil
-          .keccak256(web3.toWei(amount, 'ether') + secretText)
+          .keccak256(web3.toWei(amount, 'ether') + secretPhraseBid)
           .toString('hex');
       let productId = $('#product-id').val();
       console.log(sealedBid + ' for ' + productId);
@@ -374,7 +377,10 @@ window.App = {
           $('#successful').html('Your bid has been successfully submitted!');
           $('#successful').show();
           console.log(f);
-          $("#bidinfo").html("Bid:" + sealedBid + " with mask price of " + sendAmount).show();
+          const msg = "<p>Bid: " + sealedBid + " with mask price of " + sendAmount + "</p>";
+          const localMsg = localStorage.getItem('BidMsg:' + productId);
+          localStorage.setItem('BidMsg' + productId, localMsg ? localMsg + msg : msg);
+          $("#bid-msg").append(msg).show();
         });
       });
       event.preventDefault();
@@ -383,13 +389,13 @@ window.App = {
     $('#revealing').submit(function(event) {
       $('#successful').hide();
       let amount = $('#actual-amount').val();
-      let secretText = $('#reveal-secret-text').val();
+      let secretPhraseRev = $('#secret-phrase-revealt').val();
       let productId = $('#product-id').val();
       EcommerceStore.deployed().then(function(i) {
         i.revealBid(
           parseInt(productId),
           web3.toWei(amount).toString(),
-          secretText,
+          secretPhraseRev,
           {
             from: web3.eth.accounts[0],
             gas: 440000,
@@ -405,28 +411,35 @@ window.App = {
     $("#release-funds").click(function() {
       let productId = new URLSearchParams(window.location.search).get('id');
       EcommerceStore.deployed().then(function(f) {
-        $("#successful").html("Your transaction has been submitted. Please wait for few seconds for the confirmation").show();
+        $("#warning").html("Your transaction has been submitted. Please wait for few seconds for the confirmation").show();
         console.log(productId);
         f.releaseAmountToSeller(productId, {from: web3.eth.accounts[0], gas: 440000}).then(function(f) {
           console.log(f);
           location.reload();
         }).catch(function(e) {
           console.log(e);
+          $('#wrong').show();
+          $('#wrong').html(
+            'ERROR IN RELEASE FUNDS!',
+          );
         })
       });
     });
     $("#refund-funds").click(function() {
       let productId = new URLSearchParams(window.location.search).get('id');
       EcommerceStore.deployed().then(function(f) {
-        $("#successful").html("Your transaction has been submitted. Please wait for fewseconds for the confirmation").show();
+        $("#warning").html("Your transaction has been submitted. Please wait for fewseconds for the confirmation").show();
         f.refundAmountToBuyer(productId, {from: web3.eth.accounts[0], gas: 440000}).then(function(f) {
           console.log(f);
           location.reload();
         }).catch(function(e) {
           console.log(e);
+          $('#wrong').show();
+          $('#wrong').html(
+            'ERROR IN RETERUNING FUNDS!',
+          );
         })
       });
-      alert("refund the funds!");
     });
   },
 };

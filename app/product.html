@@ -2,11 +2,10 @@
 <html>
 
 <head>
-  <title>Decentralized Ecommerce Store</title>
-  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-  <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-  <link href="https://fonts.googleapis.com/css?family=Yantramanav:400,500,700,900" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <title>Auction Details</title>
+  <link rel="icon" type="image/x-icon" href="/app/lock.ico" />
+  <link href='/app/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+  <script src="/app/js/jquery.min.js"></script>
   <script src="./app.js"></script>
 </head>
 
@@ -34,6 +33,7 @@
         </a>
       </div>
       <a class="btn btn-primary add-button pull-right" href="list.html"> List Item </a>
+      <h1 class="pull-right">Secure Auction</h1>
     </div>
   </header>
   <div class="container">
@@ -42,70 +42,71 @@
       <button type="submit" class="btn form-submit">Finalize Auction</button>
     </form>
     <div id="product-status"></div>
-    <div id="escrow-info">
-      <div id="buyer"></div>
-      <div id="seller"></div>
-      <div id="arbiter"></div>
-      <div id="release-count"></div>
-      <div id="refund-count"></div>
-      <a id="release-funds" class="btn form-submit">Release Amount to Seller</a>
-      <a id="refund-funds" class="btn form-submit">Refund Amount to Buyer</a>
-    </div>
     <div class="container">
       <div class="row" id="product-details">
         <div style="display: none;" class="alert alert-success" id="successful"></div>
-        <div style="display: none;" class="alert-danger alert-dismissable" id="wrong"></div>
+        <div style="display: none;" class="alert alert-danger alert-dismissable" id="wrong"></div>
+        <div style="display: none;" class="alert alert-warning alert-dismissable" id="warning"></div>
         <div class="col-sm-12 product-info">
-          <div class="col-sm-6 product-info-left">
+          <div class="col-sm-4 product-info-left">
             <div id="product-image"></div>
-            <div id="product-name"></div>
-            <div id="product-auction-end"style="background-image: -moz-linear-gradient(top,#b8b0af 0%,#f2ecea 100%);
+            <div id="product-name" style="text-align:center; color: #000000;;margin-top: 0;margin-bottom: 1em;font-size:32px;position:relative;font-family: Helvetica, Arial, sans-serif;"></div>
+            <div id="product-auction-end" style="background-image: -moz-linear-gradient(top,#b8b0af 0%,#f2ecea 100%);
 background-image: -webkit-linear-gradient(top,#b8b0af 0%,#f2ecea 100%);
 background-image: -o-linear-gradient(top,#b8b0af 0%,#f2ecea 100%);
 background-image: -ms-linear-gradient(top,#b8b0af 0%,#f2ecea 100%);
 background-image: linear-gradient(top,#b8b0af 0%,#f2ecea 100%);
 -webkit-background-clip: text;
 -webkit-text-fill-color: transparent;
-position:relative;font-size:1.3em;font-family: 'Yantramanav', sans-serif;font-weight:900;text-align: center;"></div>
+position:relative;font-size:1.3em;font-family: 'Yantramanav', sans-serif;font-weight:900;text-align:center;"></div>
           </div>
-          <div class="col-sm-6 product-info-right">
+          <div class="col-sm-8 product-info-right">
             <h3>Starting Price: <span id="product-price"></span></h3>
-            <div id="waiting" style="display:none;">The auction hasn't started yet.</div>
+            <div id="waiting" style="display:none;">The auction hasn't started yet!</div>
             <form id="bidding" class="col-sm-6">
-              <h4>Your Bid</h4>
+              <h4>Make A Bid</h4>
               <div class="form-group">
-                <label for="actural-bid-amount">ACTURAL Bid Amount</label>
-                <input type="text" class="form-control" name="actural-bid-amount" id="actural-bid-amount" placeholder="it should  Start Price" required="required">
+                <label for="actual-bid-amount">Actual Bid Amount</label>
+                <input type="text" class="form-control" name="actual-bid-amount" id="actual-bid-amount" placeholder="BIGGER THAN STARTING PRICE!" required="required">
               </div>
               <div class="form-group">
-                <label for="bid-send-amount">Bid Mask</label>
-                <input type="text" class="form-control" name="bid-send-amount" id="bid-send-amount" placeholder="BE ABOVE ACTURAL BID." required="required">
+                <label for="bid-mask">Bid Mask</label>
+                <input type="text" class="form-control" name="bid-mask" id="bid-mask" placeholder="BIGGER THAN ACTURAL BID!" required="required">
               </div>
               <div class="form-group">
-                <label for="secret-text">Enter Secret Phase</label>
-                <input type="text" class="form-control" name="secret-text" id="secret-text" placeholder="PLEASE DO NOT LOSE IT!!!" required="required">
+                <label for="secret-phrase">Secret Phrase</label>
+                <input type="text" class="form-control" name="secret-phrase" id="secret-phrase" placeholder="PLEASE DO NOT FOGET IT!!!" required="required">
               </div>
               <input type="hidden" name="product-id" id="product-id" />
-              <button type="submit" class="btn btn-primary"> Submit </button>
+              <button type="submit" class="btn btn-primary">Submit Bid</button>
             </form>
             <form id="revealing" class="col-sm-6">
               <h4>Reveal Bid</h4>
               <div class="form-group">
-                <label for="actual-amount">Amount You Bid</label>
-                <input type="text" class="form-control" name="actual-amount" id="actual-amount" placeholder="Amount > Start Price" required="required">
+                <label for="actual-amount">Actual Bid Amount</label>
+                <input type="text" class="form-control" name="actual-amount" id="actual-amount" placeholder="TO CLAIM YOUR BID" required="required">
               </div>
               <div class="form-group">
-                <label for="reveal-secret-text">Enter Secret Text</label>
-                <input type="text" class="form-control" name="reveal-secret-text" id="reveal-secret-text" placeholder="Any random text" required="required">
+                <label for="secret-phrase-revealt">Secret Phrase</label>
+                <input type="text" class="form-control" name="secret-phrase-revealt" id="secret-phrase-revealt" placeholder="TO CLAIM YOUR BID" required="required">
               </div>
               <input type="hidden" name="product-id" id="product-id" />
               <button type="submit" class="btn btn-primary" style="margin-top: 25px;">Reveal Bid</button>
             </form>
           </div>
         </div>
-        <div style="display: none;float: left; margin-top: 20px;" class="alert alert-success" id="bidinfo"></div>
+        <div style="display: none;float: left; margin-top: 20px;" class="alert alert-success" id="bid-msg"></div>
+        <div style="display: none;float: left; margin-top: 20px;" class="alert alert-warning alert-dismissable" id="final-result-sec"><strong>Congratulation! EOA! </strong><p></p><p></p></div>
+        <div style="display: none;float: left; margin-top: 20px;" class="alert alert-danger alert-dismissable" id="final-result-fai"><strong>So Sorry!/p</strong></div>
+        <div id="after-sale">
+          <div style="display: none;float: left; margin-top: 20px;" class="alert alert-warning alert-dismissable" id="bid-address-3"><strong>ADDRESS FOR THIS AUCTION:</strong><p></p><p></p></div>
+          <div id="release-count"></div>
+          <div id="refund-count"></div>
+          <a id="release-funds" class="btn form-submit">Release Amount to Seller</a>
+          <a id="refund-funds" class="btn form-submit">Refund Amount to Buyer</a>
+        </div>
         <div id="product-desc" class="col-sm-12">
-          <h2>Product Description</h2>
+          <h1>Detailed Information</h1>
         </div>
       </div>
     </div>

@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Decentralized Ecommerce Store</title>
+    <title>Secure Auction</title>
+    <link rel="icon" type="image/x-icon" href="/app/lock.ico" />
     <link
-      href="https://fonts.googleapis.com/css?family=Open+Sans:400,700"
+      href="/app/css/bootstrap.min.css"
       rel="stylesheet"
       type="text/css"
     />
-    <link
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/app/js/jquery.min.js"></script>
     <script src="./app.js"></script>
   </head>
   <body>
@@ -39,19 +35,20 @@
           </a>
         </div>
         <a class="btn btn-primary add-button pull-right" href="list.html"> List Item </a>
+        <h1 class="pull-right">Secure Auction</h1>
       </div>
     </header>
     <div class="container-fluid">
-      <h1>Ecommerce Store</h1>
-      <div>Total Products: <span id="total-products"></span></div>
       <div class="row">
-        <h2>Categories</h2>
-        <div id="categories" class="categories"></div>
-      </div>
-      <div class="row">
-        <h2 class="text-left">Products To Buy</h2>
-        <div class="product" id="product-list">
-          <div class="blogposts">
+        <div class="col-sm-2">
+          <h1>Categories</h1>
+          <div id="categories" class="categories"></div>
+        </div>
+        <div class="col-sm-10">
+          <h1 class="text-left">Items In Blockchain <small>(Total items: <span id="item-num"></span>)</small></h2>
+          <div class="product" id="product-list">
+            <div class="blogposts">
+            </div>
           </div>
         </div>
       </div>

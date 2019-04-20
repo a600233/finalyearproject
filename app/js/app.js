@@ -59,7 +59,7 @@ window.Utils = {
             $("#thrid-party").show();
             i.highestBidderInfo.call(productId).then(function(f) {
 
-                $("#final-result-sec").append(" He or she (" + f[0]+ ") win the bid with" + Utils.getEth(f[2]) + "!").show();
+                $("#final-result-sec").append("<p> He or she (" + f[0]+ ") win the bid with" +"<strong>"+ Utils.getEth(f[2]) +"</strong>!</p>").show();
 
             })
             i.escrowInfo.call(productId).then(function(f) {
@@ -84,7 +84,7 @@ window.Utils = {
           alert("The auction hasn't started yet!");
         } else if (currentTime < parseInt(p[6])) {
           $("#bidding").show();//揭标还是竞标！！！！
-        } else if (currentTime < (parseInt(p[6]) + 120)) {
+        } else if (currentTime < (parseInt(p[6]) + 120)) {//claim time
           $("#revealing").show();//揭标时间
         } else {
           $("#finalize-auction").show();//当前时间大于拍卖结束时间
@@ -162,7 +162,7 @@ window.Utils = {
    */
   saveProductToBlockchain: function(params, imageId, descId) {
     let startTime = Date.parse(params['product-auction-start']) / 1000;
-    let auctionDuration = parseInt(params['product-auction-end']) * 24 * 60 * 60;
+    let auctionDuration = parseInt(params['product-auction-end']) * 60;//auction time * 24 * 60
     let endTime =
       startTime + auctionDuration;
 

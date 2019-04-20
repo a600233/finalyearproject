@@ -69,39 +69,14 @@ contract Escrow {
 
   // 向卖方发放金额
   function releaseAmountToSeller(address caller) public {
-    require(!fundsDisbursed, 'releaseAmountToSeller error');
-    if ((caller == buyer ||
-        caller == seller ||
-        caller == arbiter) &&
-        releaseAmount[caller] != true) {
-      releaseAmount[caller] = true;
-      releaseCount += 1;
-      UnlockAmount(productId, "release", caller);
-    }
+	seller.transfer(amount);
+	 fundsDisbursed = true;
 
-    if (releaseCount >= 2) {
-      seller.transfer(amount);
-      fundsDisbursed = true;
-      DisburseAmount(productId, amount, seller);
-    }
   }
 
   // 退款金额给买方
   function refundAmountToBuyer(address caller) public {
-    require(!fundsDisbursed, 'refundAmountToBuyer error');
-    if ((caller == buyer ||
-        caller == seller ||
-        caller == arbiter) &&
-        refundAmount[caller] != true) {
-      refundAmount[caller] = true;
-      refundCount += 1;
-      UnlockAmount(productId, "refund", caller);
-    }
-
-    if (refundCount >= 2) {
-      buyer.transfer(amount);
-      fundsDisbursed = true;
-      DisburseAmount(productId, amount, buyer);
-    }
+	buyer.transfer(amount);
+	fundsDisbursed = true;
   }
 }

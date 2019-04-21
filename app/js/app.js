@@ -40,7 +40,7 @@ window.Utils = {
         });
         // bids
         const msg = localStorage.getItem('BidMsg' + productId);
-        msg && $("#bid-msg").append(msg).show();
+         msg && $("#bid-msg").append(msg).show();
         // 产品图片
         $("#product-image").append("<img src='" + config.ipfs.base + p[3] + "' />");
         // 产品价格
@@ -86,6 +86,7 @@ window.Utils = {
           $("#bidding").show();//揭标还是竞标！！！！
         } else if (currentTime < (parseInt(p[6]) + 120)) {//claim time
           $("#revealing").show();//揭标时间
+        $("#product-auction-end").html(Utils.countDownDateForClaim(parseInt(p[6]) + 120));
         } else {
           $("#finalize-auction").show();//当前时间大于拍卖结束时间
         }
@@ -139,6 +140,37 @@ window.Utils = {
       return 'Auction will close in ' + distance + ' seconds';
     }
   },
+
+  countDownDateForClaim: function(duration) {
+    let now = Utils.getCurrentTimeInSeconds();
+    let distance = duration - now;
+    if (distance <= 0) {
+      return 'EXPIRED';
+    }
+    let days = Math.trunc(distance / (24 * 60 * 60));
+    distance -= days * 24 * 60 * 60;
+    let hours = Math.trunc(distance / (60 * 60));
+    distance -= hours * 60 * 60;
+    let minutes = Math.trunc(distance / 60);
+
+    if (days > 0) {
+      return (
+        'Claim Time: less than ' +
+        days +
+        ' days ' +
+        hours +
+        ' hours ' +
+        minutes +
+        ' minutes'
+      );
+    } else if (hours > 0) {
+      return 'Claim Time: less than ' + hours + ' hours ' + minutes + ' minutes ';
+    } else if (minutes > 0) {
+      return 'Claim Time: less than ' + minutes + ' minutes ';
+    } else {
+      return 'Claim Time: less than ' + distance + ' seconds';
+    }
+  },
   /**
    * 保存产品
    * @param {*} reader
@@ -181,16 +213,16 @@ window.Utils = {
           gas: 666666,
         },
       ).then(function(f) {
-        $('#successful').show();
-        $('#successful').html('Your auction was hold successfully!');
+        $('#successful-list').show();
+        $('#successful-list').html('Your auction was hold successfully!');
         setTimeout(() => {
           location.href = './index.html';
-        }, 1000);
+        }, 1500);
       }).catch(err => {
         reject(err);
-        $('#wrong').show();
-        $('#wrong').html(
-          'THERE IS AN ERROR IN LISTING A ITEM!',
+        $('#wrong-list').show();
+        $('#wrong-list').html(
+          'THERE IS AN ERROR IN LISTING A ITEM! PLEASE CHECK YOUR INFORMATION OF ITEM!',
         );
       });
     });

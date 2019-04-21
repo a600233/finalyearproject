@@ -92,7 +92,7 @@ window.Utils = {
           //alert("The auction hasn't started yet!");
         } else if (currentTime < parseInt(p[6])) {
           $("#bidding").show();//揭标还是竞标！！！！
-        } else if (currentTime < (parseInt(p[6]) + 80)) {//claim time
+        } else if (currentTime < (parseInt(p[6]) + 100)) {//claim time
           $("#revealing").show();//揭标时间
         $("#product-auction-end").html(Utils.countDownDateForClaim(parseInt(p[6]) + 80));
         } else {
@@ -381,7 +381,7 @@ window.App = {
           .then(function(f) {
             $('#warning').show();
             $('#warning').html(
-              'The auction has been finalized and winner declared.',
+              'The auction has been finalized!',
             );
             console.log(f);
             location.reload();
@@ -452,7 +452,7 @@ window.App = {
           },
         ).then(function(f) {
           $('#successful').show();
-          $('#successful').html('Your bid has been successfully revealed!');
+          $('#successful').html('Your bid has been successfully claimed!');
           $('#secret-phrase-revealt').val('');
           $('#actual-amount').val('');
           console.log(f);

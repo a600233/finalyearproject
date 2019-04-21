@@ -10,10 +10,10 @@ contract Escrow {
   address public arbiter;
   // 存储钱
   uint public amount;
-  bool public fundsDisbursed;
-  mapping (address => bool) releaseAmount;
+  bool public fundsDisbursed;//是否打款
+  mapping (address => bool) releaseAmount;//对应不同角色是否同打款
   uint public releaseCount;
-  mapping (address => bool) refundAmount;
+  mapping (address => bool) refundAmount;//对应不同角色是否同退款
   uint public refundCount;
 
   event CreateEscrow(
@@ -69,14 +69,35 @@ contract Escrow {
 
   // 向卖方发放金额
   function releaseAmountToSeller(address caller) public {
-	seller.transfer(amount);
-	 fundsDisbursed = true;
 
+    if ((caller == buyer
+      ||caller == seller
+        || caller == arbiter)
+          &&  refundAmount[caller] != true
+          && fundsDisbursed != true) {
+            refundAmount[caller] = true;
+               releaseCount += 1;
+    }
+    if (releaseCount == 2) {
+      buyer.transfer(amount);
+      fundsDisbursed = true;
+    }
   }
 
   // 退款金额给买方
   function refundAmountToBuyer(address caller) public {
-	buyer.transfer(amount);
-	fundsDisbursed = true;
+    if ((caller == buyer
+      ||caller == seller
+        || caller == arbiter)
+          &&  refundAmount[caller] != true
+          && fundsDisbursed != true) {
+            refundAmount[caller] = true;
+               refundCount += 1;
+    }
+    if (refundCount == 2) {
+      buyer.transfer(amount);
+      fundsDisbursed = true;
+    }
   }
+
 }

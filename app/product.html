@@ -44,9 +44,9 @@
     <div id="product-status"></div>
     <div class="container">
       <div class="row" id="product-details">
-        <div style="display: none;" class="alert alert-success" id="successful"></div>
-        <div style="display: none;" class="alert alert-danger alert-dismissable" id="wrong"></div>
-        <div style="display: none;" class="alert alert-warning alert-dismissable" id="warning"></div>
+        <div style="display: none; text-align: center;" class="alert alert-success" id="successful"></div>
+        <div style="display: none; text-align: center;" class="alert alert-danger alert-dismissable" id="wrong"></div>
+        <div style="display: none; text-align: center;" class="alert alert-warning alert-dismissable" id="warning"></div>
         <div class="col-sm-12 product-info">
           <div class="col-sm-4 product-info-left">
             <div id="product-image"></div>
@@ -84,11 +84,11 @@ position:relative;font-size:1.3em;padding: 2px;font-family: 'Yantramanav', sans-
               <h4>Claim Bid</h4>
               <div class="form-group">
                 <label for="actual-amount">Actual Bid Amount</label>
-                <input type="text" class="form-control" name="actual-amount" id="actual-amount" placeholder="TO CLAIM YOUR BID" required="required">
+                <input type="text" class="form-control" name="actual-amount" id="actual-amount" placeholder="CLAIM YOUR BID" required="required">
               </div>
               <div class="form-group">
                 <label for="secret-phrase-revealt">Secret Phrase</label>
-                <input type="text" class="form-control" name="secret-phrase-revealt" id="secret-phrase-revealt" placeholder="TO CLAIM YOUR BID" required="required">
+                <input type="text" class="form-control" name="secret-phrase-revealt" id="secret-phrase-revealt" placeholder="CLAIM YOUR BID" required="required">
               </div>
               <input type="hidden" name="product-id" id="product-id" />
               <button type="submit" class="btn btn-primary" style="margin-top: 25px;">Claim Bid</button>
@@ -96,14 +96,19 @@ position:relative;font-size:1.3em;padding: 2px;font-family: 'Yantramanav', sans-
           </div>
         </div>
         <div style="display: none;float: left; margin-top: 20px;" class="alert alert-success" id="bid-msg"></div>
-          <div style="display: none;float: left; margin-top: 20px;" class="alert-warning alert-dismissable" id="final-result-sec"><strong>Congratulation! EOA! </strong><p></p><p></p></div>
-          <div style="display: none;float: left; margin-top: 20px;" class="alert alert-danger alert-dismissable" id="final-result-fai"><strong>So Sorry!</strong></div>
-        <div id="product-desc" class="col-sm-12">
+        <div style="display: none;float: left; margin-top: 50px;border-radius: 6px;" class="alert-warning alert-dismissable" id="final-result-sec"><p></p><strong>&nbsp&nbspCongratulation! EOA! </strong><p></p></div>
+        <div style="display: none;float: left; margin-top: 20px;" class="alert alert-danger alert-dismissable" id="final-result-fai"><strong>So Sorry!</strong></div>
+        <div id="product-desc" class="col-sm-12" style=" margin-top: 16px">
+          <div id="after-auction" class="col-sm-12">
           <div style="display: none;" id="thrid-party">
-          <h1>Third party's operations: </h1>  <br>
-          <div id="for-seller" class="btn btn-thrid-par">Release Amount to Seller</div>
-          <div id="for-bidder" class="btn btn-thrid-par">Refund Amount to Buyer</div><br><br>
+          <h1>Subsequent Transactions: </h1> <br>
+          <div id="for-seller" class="btn btn-thrid-par" style=" margin-bottom: 0;">Transfer to Seller </div>
+          <label id="release-count" style="text-align:center;font-size: 20px;"></label><p></p>
+          <br><br><div id="for-bidder" class="btn btn-thrid-par" style=" margin-bottom: 0;">Refund to Buyer</div>
+          <label id="refund-count" style="text-align:center;font-size: 20px;"></label><p></p><br><br>
           </div>
+          </div>
+          <div style="display: none; text-align: center; margin-top: 50px;" class="alert alert-success" id="after-success"></div>
           <h1>Detailed Information</h1>
         </div>
       </div>

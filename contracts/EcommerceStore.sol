@@ -230,6 +230,7 @@ contract EcommerceStore {
       uint refund = product.highestBid - product.secondHighestBid;
       product.highestBidder.transfer(refund);
     }
+    stores[productIdInStore[_productId]][_productId] = product;
   }
 
   // 产品托管地址

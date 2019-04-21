@@ -59,20 +59,28 @@ window.Utils = {
             $("#thrid-party").show();
             i.highestBidderInfo.call(productId).then(function(f) {
 
-                $("#final-result-sec").append("<p> He or she (" + f[0]+ ") win the bid with" +"<strong>"+ Utils.getEth(f[2]) +"</strong>!</p>").show();
+                $("#final-result-sec").append("<p> &nbsp&nbspShe or He (" + f[0]+ ") win the bid with" +"<strong>"+ Utils.getEth(f[2]) +"</strong>!</p>").show();
 
             })
             i.escrowInfo.call(productId).then(function(f) {
 
-              $("#final-result-sec").append('<p><strong>ADDRESS FOR THIS AUCTION:</strong></p><p>'+ f[0]+ '------------------------> Bidder</p>').show();
-              $("#final-result-sec").append('<p>'+ f[1] +'------------------------> Seller</p>').show();
-              $("#final-result-sec").append('<p>'+ f[2]+'------------------------> The Third Party</p>').show();
+              $("#final-result-sec").append('<p><strong>&nbsp&nbspADDRESSES FOR THIS AUCTION:</strong></p><p>&nbsp&nbsp'+ f[0]+ '------------------------> Bidder</p>').show();
+              $("#final-result-sec").append('<p>&nbsp&nbsp'+ f[1] +'------------------------> Seller</p>').show();
+              $("#final-result-sec").append('<p>&nbsp&nbsp'+ f[2]+'------------------------> The Third Party</p>').show();
+                console.log(f[3])
               if(f[3] == true) {
                 $("#successful").show();
-                $("#successful").html("Amount from the escrow has been released");
+                $("#successful").html("<strong>Subsequent transaction of auction is completed!</strong>");
+                $("#after-success").show();
+                $("#after-success").html("<strong>Subsequent transaction of auction is completed!</strong>");
+                $("#after-auction").hide();
               } else {
-                $("#release-count").html(f[4] + " of 3 participants have agreed to release funds");
-                $("#refund-count").html(f[5] + " of 3 participants have agreed to refund the buyer");
+                  console.log(f[4]);
+                      console.log(f[5]);
+                $("#release-count").show();
+                $("#refund-count").show();
+                $("#release-count").html( f[4]+ " of 3 agree to transfer eth to seller.");
+                $("#refund-count").html( f[5]+ " of 3 agree to refund eth to bidder.");
               }
             });
           });
@@ -81,12 +89,12 @@ window.Utils = {
         } else if (currentTime < p[5]) {
           // 拍卖未开始
           $("#waiting").show();
-          alert("The auction hasn't started yet!");
+          //alert("The auction hasn't started yet!");
         } else if (currentTime < parseInt(p[6])) {
           $("#bidding").show();//揭标还是竞标！！！！
-        } else if (currentTime < (parseInt(p[6]) + 120)) {//claim time
+        } else if (currentTime < (parseInt(p[6]) + 80)) {//claim time
           $("#revealing").show();//揭标时间
-        $("#product-auction-end").html(Utils.countDownDateForClaim(parseInt(p[6]) + 120));
+        $("#product-auction-end").html(Utils.countDownDateForClaim(parseInt(p[6]) + 80));
         } else {
           $("#finalize-auction").show();//当前时间大于拍卖结束时间
         }
@@ -382,7 +390,7 @@ window.App = {
             console.log(e);
             $('#wrong').show();
             $('#wrong').html(
-              'Auctions can only be concluded by a third party!',
+              'Auctions can only be concluded by the third party!',
             );
           });
       });
@@ -453,10 +461,11 @@ window.App = {
       event.preventDefault();
     });
     $("#for-seller").click(function() {//给钱
-      let productId = new URLSearchParams(window.location.search).get('id');
+      let productId = new URLSearchParams(window.location.search).get('Id');
       EcommerceStore.deployed().then(function(f) {
         $("#warning").html("Please be patient for a moment.").show();
-        console.log(productId);
+        console.log("productId:");
+        console.log(parseInt(productId));
         f.releaseAmountToSeller(parseInt(productId), {from: web3.eth.accounts[0], gas: 233333}).then(function(f) {
           console.log(f);
           location.reload();
@@ -470,11 +479,13 @@ window.App = {
       });
     });
     $("#for-bidder").click(function() {//退款给
-      let productId = new URLSearchParams(window.location.search).get('id');
+      let productId = new URLSearchParams(window.location.search).get('Id');
       EcommerceStore.deployed().then(function(f) {
         $("#warning").html("Please be patient for a moment.").show();
+        console.log("productId:");
+        console.log(parseInt(productId));
+
         f.refundAmountToBuyer(parseInt(productId), {from: web3.eth.accounts[0], gas: 233333}).then(function(f) {
-          console.log(f);
           location.reload();
         }).catch(function(e) {
           console.log(e);

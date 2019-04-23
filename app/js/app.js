@@ -35,7 +35,7 @@ window.Utils = {
             // do stuff with this chunk of data
             content += chunk.toString();
             console.log(content);
-            $("#product-desc").append("<div>" + content+ "</div>");
+            $("#product-desc").append("<br><div style=\"text-align:center;font-size: 30px;\">" + content + "</div>");
           });
         });
         // bids
@@ -50,10 +50,20 @@ window.Utils = {
           console.log(p[1]);
         // 拍卖结束时间
         $("#product-auction-end").html(Utils.countDownDate(p[6]));
+        //setInterval(document.getElementById("product-auction-end").innerHTML = Utils.countDownDate(p[6]),1000);
         // 产品ID
         $("#product-id").val(p[0]);
-        $("#revealing, #bidding, #finalize-auction, #after-sale").hide();
-        let currentTime = Utils.getCurrentTimeInSeconds();
+
+        if(parseInt(p[9])==0){
+          $("#item-condition").html("The Condition of Item:  "+"<strong>&nbsp;Brand New</strong>");
+        }else{
+          $("#item-condition").html("The Condition of Item: "+"<strong>&nbsp;Have Been Used</strong>");
+        }
+
+      console.log("qingkuang");
+      console.log(p[9]);
+        $("#claim, #bidding, #declare-end, #after-sale").hide();
+        let presentTimeInSeconds = Utils.getPresentTime();
         if (parseInt(p[8]) == 1) {//Sold
           EcommerceStore.deployed().then(function(i) {
             $("#thrid-party").show();
@@ -86,17 +96,17 @@ window.Utils = {
           });
         } else if (parseInt(p[8]) == 2) {
           $("#wrong").append("Abortive Auction!").show();//unsold
-        } else if (currentTime < p[5]) {
+        } else if (presentTimeInSeconds < p[5]) {
           // 拍卖未开始
           $("#waiting").show();
-          //alert("The auction hasn't started yet!");
-        } else if (currentTime < parseInt(p[6])) {
+        } else if (presentTimeInSeconds < parseInt(p[6])) {
           $("#bidding").show();//揭标还是竞标！！！！
-        } else if (currentTime < (parseInt(p[6]) + 100)) {//claim time
-          $("#revealing").show();//揭标时间
+        } else if (presentTimeInSeconds < (parseInt(p[6]) + 30)) {//claim time
+          $("#claim").show();//揭标时间 80s
         $("#product-auction-end").html(Utils.countDownDateForClaim(parseInt(p[6]) + 80));
+        //  setInterval(document.getElementById("product-auction-end").innerHTML = Utils.countDownDateForClaim(p[6]),1000);
         } else {
-          $("#finalize-auction").show();//当前时间大于拍卖结束时间
+          $("#declare-end").show();//当前时间大于拍卖结束时间
         }
       });
     });
@@ -104,7 +114,7 @@ window.Utils = {
   /**
    * 获取当前时间戳
    */
-  getCurrentTimeInSeconds: function() {
+  getPresentTime: function() {
     return Math.round(new Date() / 1000);
   },
   /**
@@ -118,65 +128,45 @@ window.Utils = {
    * 显示结束时间
    * @param {Number} seconds 秒
    */
-  countDownDate: function(duration) {
-    let now = Utils.getCurrentTimeInSeconds();
-    let distance = duration - now;
+  countDownDate: function(endingtime) {
+    let now = Utils.getPresentTime();
+    let distance = endingtime - now;
     if (distance <= 0) {
       return 'EXPIRED';
     }
-    let days = Math.trunc(distance / (24 * 60 * 60));
-    distance -= days * 24 * 60 * 60;
-    let hours = Math.trunc(distance / (60 * 60));
-    distance -= hours * 60 * 60;
-    let minutes = Math.trunc(distance / 60);
 
-    if (days > 0) {
+
+    var days = Math.floor(distance / ( 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / ( 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) /  60);
+    var seconds = Math.floor(distance % 60);
+
+    if (distance > 0) {
       return (
-        'Auction will close in ' +
-        days +
-        ' days ' +
-        hours +
-        ' hours ' +
+        'Bidding will close in ' +
         minutes +
-        ' minutes'
+        ' minutes ' + seconds + ' seconds' //  days + ' days ' + hours + ' hours ' +
       );
-    } else if (hours > 0) {
-      return 'Auction will close in ' + hours + ' hours ' + minutes + ' minutes ';
-    } else if (minutes > 0) {
-      return 'Auction will close in ' + minutes + ' minutes ';
-    } else {
-      return 'Auction will close in ' + distance + ' seconds';
     }
   },
 
-  countDownDateForClaim: function(duration) {
-    let now = Utils.getCurrentTimeInSeconds();
-    let distance = duration - now;
-    if (distance <= 0) {
+  countDownDateForClaim: function(endingtime) {
+    let now = Utils.getPresentTime();
+    let distance = endingtime - now;
+    if (distance = 0) {
       return 'EXPIRED';
     }
-    let days = Math.trunc(distance / (24 * 60 * 60));
-    distance -= days * 24 * 60 * 60;
-    let hours = Math.trunc(distance / (60 * 60));
-    distance -= hours * 60 * 60;
-    let minutes = Math.trunc(distance / 60);
+    var days = Math.floor(distance / ( 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / ( 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) /  60);
+    var seconds = Math.floor(distance % 60);
 
-    if (days > 0) {
+    if (distance > 0) {
       return (
-        'Claim Time: less than ' +
-        days +
-        ' days ' +
-        hours +
-        ' hours ' +
+        'Claim time: ' +
         minutes +
-        ' minutes'
+        ' minutes ' + seconds + ' seconds' //  days + ' days ' + hours + ' hours ' +
       );
-    } else if (hours > 0) {
-      return 'Claim Time: less than ' + hours + ' hours ' + minutes + ' minutes ';
-    } else if (minutes > 0) {
-      return 'Claim Time: less than ' + minutes + ' minutes ';
-    } else {
-      return 'Claim Time: less than ' + distance + ' seconds';
     }
   },
   /**
@@ -371,7 +361,7 @@ window.App = {
       event.preventDefault();
     });
 
-    $('#finalize-auction').submit(function(event) {
+    $('#declare-end').submit(function(event) {
       $('#successful').hide();
       let productId = $('#product-id').val();
       EcommerceStore.deployed().then(function(i) {
@@ -390,7 +380,7 @@ window.App = {
             console.log(e);
             $('#wrong').show();
             $('#wrong').html(
-              'Auctions can only be concluded by the third party!',
+              'Auctions can only be declared by the third party!',
             );
           });
       });
@@ -436,7 +426,7 @@ window.App = {
       event.preventDefault();
     });
 
-    $('#revealing').submit(function(event) {
+    $('#claim').submit(function(event) {
       $('#successful').hide();
       let amount = $('#actual-amount').val();
       let secretPhraseRev = $('#secret-phrase-revealt').val();

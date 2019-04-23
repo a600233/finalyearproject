@@ -37,7 +37,7 @@
     </div>
   </header>
   <div class="container">
-    <form id="finalize-auction" class="col-sm-6">
+    <form id="declare-end" class="col-sm-6">
       <input type="hidden" name="product-id" id="product-id" />
       <button type="submit" class="btn form-submit">Declare the End</button>
     </form>
@@ -80,7 +80,7 @@ position:relative;font-size:1.3em;padding: 2px;font-family: 'Yantramanav', sans-
               <input type="hidden" name="product-id" id="product-id" />
               <button type="submit" class="btn btn-primary">Submit Bid</button>
             </form>
-            <form id="revealing" class="col-sm-6">
+            <form id="claim" class="col-sm-6">
               <h4>Claim Bid</h4>
               <div class="form-group">
                 <label for="actual-amount">Actual Bid Amount</label>
@@ -110,6 +110,7 @@ position:relative;font-size:1.3em;padding: 2px;font-family: 'Yantramanav', sans-
           </div>
           <div style="display: none; text-align: center; margin-top: 50px;" class="alert alert-success" id="after-success"></div>
           <h1>Detailed Information</h1>
+            <p></p><div id="item-condition" style="text-align: center; margin-top: 30px; margin-bottom: 30px;font-size: 30px">The Condition of Item</div>
         </div>
       </div>
     </div>

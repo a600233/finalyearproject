@@ -79,7 +79,7 @@ contract Escrow {
                releaseCount += 1;
     }
     if (releaseCount == 2) {
-      buyer.transfer(amount);
+      seller.transfer(amount);
       fundsDisbursed = true;
     }
   }

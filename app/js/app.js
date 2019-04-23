@@ -101,7 +101,7 @@ window.Utils = {
           $("#waiting").show();
         } else if (presentTimeInSeconds < parseInt(p[6])) {
           $("#bidding").show();//揭标还是竞标！！！！
-        } else if (presentTimeInSeconds < (parseInt(p[6]) + 30)) {//claim time
+        } else if (presentTimeInSeconds < (parseInt(p[6]) + 80)) {//claim time
           $("#claim").show();//揭标时间 80s
         $("#product-auction-end").html(Utils.countDownDateForClaim(parseInt(p[6]) + 80));
         //  setInterval(document.getElementById("product-auction-end").innerHTML = Utils.countDownDateForClaim(p[6]),1000);
@@ -118,7 +118,7 @@ window.Utils = {
     return Math.round(new Date() / 1000);
   },
   /**
-   * 展示价格
+   * Show the price of items
    * @param {String} amt
    */
   getEth: function(amt) {
@@ -134,8 +134,6 @@ window.Utils = {
     if (distance <= 0) {
       return 'EXPIRED';
     }
-
-
     var days = Math.floor(distance / ( 60 * 60 * 24));
     var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / ( 60 * 60));
     var minutes = Math.floor((distance % (1000 * 60 * 60)) /  60);
@@ -148,12 +146,13 @@ window.Utils = {
         ' minutes ' + seconds + ' seconds' //  days + ' days ' + hours + ' hours ' +
       );
     }
+
   },
 
   countDownDateForClaim: function(endingtime) {
     let now = Utils.getPresentTime();
     let distance = endingtime - now;
-    if (distance = 0) {
+    if (distance <= 0) {
       return 'EXPIRED';
     }
     var days = Math.floor(distance / ( 60 * 60 * 24));
@@ -168,6 +167,7 @@ window.Utils = {
         ' minutes ' + seconds + ' seconds' //  days + ' days ' + hours + ' hours ' +
       );
     }
+
   },
   /**
    * 保存产品

@@ -300,9 +300,9 @@ window.Utils = {
     EcommerceStore.deployed().then(function(i) {
       i.productIndex().then((number) => {
         $('#item-num').html('' + number);
-        for (let j = 0; j < number; j++) {
+        for (let j = number-1; j >= 0; j--) {//根据产品id，和产品数量来遍历获取列表的
           i.getProductDetail(j + 1).then(function(p) {
-            $("#product-list .blogposts").append(Utils.buildProduct(p, j + 1));
+            $("#product-list .blogposts").append(Utils.buildProduct(p, j +1));//id越小，说明产品越早添加
             if (p[6] < new Date/1000) {
               $("#product-reveal-list .blogposts").append(Utils.buildProduct(p, j + 1));
             }

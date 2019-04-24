@@ -49,8 +49,10 @@ window.Utils = {
         $("#product-name").html(p[1]);
           console.log(p[1]);
         // 拍卖结束时间
-        $("#product-auction-end").html(Utils.countDownDate(p[6]));
-        //setInterval(document.getElementById("product-auction-end").innerHTML = Utils.countDownDate(p[6]),1000);
+        //$("#product-auction-end").html(Utils.countDownDate(p[6]));
+        setInterval(function(){
+          document.getElementById("product-auction-end").innerHTML = Utils.countDownDate(p[6])
+        },1000);
         // 产品ID
         $("#product-id").val(p[0]);
 
@@ -100,11 +102,13 @@ window.Utils = {
           // 拍卖未开始
           $("#waiting").show();
         } else if (presentTimeInSeconds < parseInt(p[6])) {
-          $("#bidding").show();//揭标还是竞标！！！！
+          $("#bidding").show();//竞标时间！！！！
         } else if (presentTimeInSeconds < (parseInt(p[6]) + 80)) {//claim time
           $("#claim").show();//揭标时间 80s
-        $("#product-auction-end").html(Utils.countDownDateForClaim(parseInt(p[6]) + 80));
-        //  setInterval(document.getElementById("product-auction-end").innerHTML = Utils.countDownDateForClaim(p[6]),1000);
+        //$("#product-auction-end").html(Utils.countDownDateForClaim(parseInt(p[6]) + 80));
+        setInterval(function(){
+          document.getElementById("product-auction-end").innerHTML = Utils.countDownDateForClaim(parseInt(p[6]) + 80)
+        },1000);
         } else {
           $("#declare-end").show();//当前时间大于拍卖结束时间
         }
@@ -112,10 +116,11 @@ window.Utils = {
     });
   },
   /**
-   * 获取当前时间戳
+   * get present by seconds
    */
   getPresentTime: function() {
-    return Math.round(new Date() / 1000);
+    return Math.round(new Date() / 1000);//toseconds
+    //return new Date().getTime()/ 1000;
   },
   /**
    * Show the price of items
@@ -132,7 +137,9 @@ window.Utils = {
     let now = Utils.getPresentTime();
     let distance = endingtime - now;
     if (distance <= 0) {
+      //location.reload();
       return 'EXPIRED';
+
     }
     var days = Math.floor(distance / ( 60 * 60 * 24));
     var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / ( 60 * 60));
@@ -153,6 +160,7 @@ window.Utils = {
     let now = Utils.getPresentTime();
     let distance = endingtime - now;
     if (distance <= 0) {
+      //location.reload();
       return 'EXPIRED';
     }
     var days = Math.floor(distance / ( 60 * 60 * 24));

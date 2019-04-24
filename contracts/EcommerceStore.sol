@@ -126,9 +126,9 @@ contract EcommerceStore {
     require(now >= product.startTime);
     require(now <= product.endTime);
     require(msg.value > product.startingPrice);
-    require(product.bids[msg.sender][_bid].bidder == 0);
+    require(product.bids[msg.sender][_bid].bidder == 0);//require(productIdInStore[_productId] != msg.sender);卖家不能进行拍卖
     product.bids[msg.sender][_bid] = Bid(msg.sender, _productId, msg.value, false);
-    product.totalBids += 1;
+    product.totalBids += 1;//  product.totalBids = 1+product.totalBids;
     return true;
   }
 
@@ -205,6 +205,30 @@ contract EcommerceStore {
     }
     return result;
   }
+  /*    function safeParseInt(string memory _a, uint _b) internal pure returns (uint _parsedInt) {
+        bytes memory bresult = bytes(_a);
+        uint mint = 0;
+        bool decimals = false;
+        for (uint i = 0; i < bresult.length; i++) {
+            if ((uint(uint8(bresult[i])) >= 48) && (uint(uint8(bresult[i])) <= 57)) {
+                if (decimals) {
+                   if (_b == 0) break;
+                    else _b--;
+                }
+                mint *= 10;
+                mint += uint(uint8(bresult[i])) - 48;
+            } else if (uint(uint8(bresult[i])) == 46) {
+                require(!decimals, 'More than one decimal encountered in string!');
+                decimals = true;
+            } else {
+                revert("Non-numeral character encountered in string!");
+            }
+        }
+        if (_b > 0) {
+            mint *= 10 ** _b;
+        }
+        return mint;
+    }*/
 
   // 完成拍卖
   function finishAuction(uint _productId) public {

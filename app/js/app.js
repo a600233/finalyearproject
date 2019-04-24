@@ -111,6 +111,7 @@ window.Utils = {
         },1000);
         } else {
           $("#declare-end").show();//当前时间大于拍卖结束时间
+          $("#claim-over").show();
         }
       });
     });

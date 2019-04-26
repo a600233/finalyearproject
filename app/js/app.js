@@ -15,7 +15,7 @@ const ipfs = ipfsAPI({
   host: config.ipfs.host,
   port: config.ipfs.port,
   protocol: config.ipfs.protocol,
-});
+});//configure ipfs
 
 window.Utils = {
   /**
@@ -85,7 +85,7 @@ window.Utils = {
                 $("#successful").html("<strong>Subsequent transaction of auction is completed!</strong>");
                 $("#after-success").show();
                 $("#after-success").html("<strong>Subsequent transaction of auction is completed!</strong>");
-                $("#after-auction").hide();
+                $("#after-auction").hide();//隐藏后续交易
               } else {
                   console.log(f[4]);
                       console.log(f[5]);
@@ -111,7 +111,7 @@ window.Utils = {
         },1000);
         } else {
           $("#declare-end").show();//当前时间大于拍卖结束时间
-          $("#claim-over").show();
+          $("#claim-over").show();//显示时间截止
         }
       });
     });
@@ -130,8 +130,9 @@ window.Utils = {
   getEth: function(amt) {
     return ' ' + web3.fromWei(amt, 'ether')+' ETH';//Ξ
   },
+
   /**
-   * 显示结束时间
+   * 显示结束时间 display endingtime.
    * @param {Number} seconds 秒
    */
   countDownDate: function(endingtime) {
@@ -154,7 +155,6 @@ window.Utils = {
         ' minutes ' + seconds + ' seconds' //  days + ' days ' + hours + ' hours ' +
       );
     }
-
   },
 
   countDownDateForClaim: function(endingtime) {
@@ -162,7 +162,7 @@ window.Utils = {
     let distance = endingtime - now;
     if (distance <= 0) {
       //location.reload();
-      return 'EXPIRED';
+return 'EXPIRED';
     }
     var days = Math.floor(distance / ( 60 * 60 * 24));
     var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / ( 60 * 60));
@@ -343,7 +343,7 @@ window.App = {
     Utils.renderStore();
     Utils.renderCategories();
 
-    var reader;
+    var reader;//到每个方法里
 
     $('#product-image').change(function(event) {
       //onsole.log(test1); for test
@@ -416,14 +416,14 @@ window.App = {
       console.log(sealedBid + ' for ' + productId);
       EcommerceStore.deployed().then(function(i) {
         i.bid(parseInt(productId), sealedBid, {
-          value: web3.toWei(sendAmount),
+          value: web3.toWei(sendAmount),//直接sendamount
           from: web3.eth.accounts[0],
           gas: 233333,
         }).then(function(f) {
           $('#successful').html('Your bid has been successfully submitted!');
           $('#successful').show();
           console.log(f);
-          const msg = "<p>Bid: " + sealedBid + " with mask price of " + sendAmount + "</p>";
+          const msg = "<p>Bid: " + sealedBid + " with mask price of " + sendAmount + " ETH"+"</p>";
           const localMsg = localStorage.getItem('BidMsg:' + productId);
           localStorage.setItem('BidMsg' + productId, localMsg ? localMsg + msg : msg);
           $("#bid-msg").append(msg).show();

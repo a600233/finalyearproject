@@ -22,7 +22,7 @@ contract EcommerceStore {
     uint value;
     bool revealed;
   }
-
+//Product[] public products;
   struct Product {
     // 产品id
     uint id;
@@ -124,7 +124,7 @@ contract EcommerceStore {
   function bid(uint _productId, bytes32 _bid) payable public returns(bool) {
     Product storage product = stores[productIdInStore[_productId]][_productId];
     require(now >= product.startTime);
-    require(now <= product.endTime);
+    require(now <= product.endTime);//换if()
     require(msg.value > product.startingPrice);
     require(product.bids[msg.sender][_bid].bidder == 0);//require(productIdInStore[_productId] != msg.sender);卖家不能进行拍卖
     product.bids[msg.sender][_bid] = Bid(msg.sender, _productId, msg.value, false);

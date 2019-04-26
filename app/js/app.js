@@ -49,7 +49,6 @@ window.Utils = {
         $("#product-name").html(p[1]);
           console.log(p[1]);
         // 拍卖结束时间
-        //$("#product-auction-end").html(Utils.countDownDate(p[6]));
         setInterval(function(){
           document.getElementById("product-auction-end").innerHTML = Utils.countDownDate(p[6])
         },1000);
@@ -67,15 +66,26 @@ window.Utils = {
         $("#claim, #bidding, #declare-end, #after-sale").hide();
         let presentTimeInSeconds = Utils.getPresentTime();
         if (parseInt(p[8]) == 1) {//Sold
+
           AuctionSite.deployed().then(function(i) {
             $("#thrid-party").show();
+            /*if(parseInt(f[0]) == 0){
+              $("#after-auction").hide();
+              $("#final-result-sec").hide();
+              $("#wrong").append("NO ONE CLAIM!!!").show();
+            }*/
             i.highestBidderInfo.call(productId).then(function(f) {
-
+              if(parseInt(f[0]) != 0){
                 $("#final-result-sec").append("<p> &nbsp&nbspShe or He (" + f[0]+ ") win the bid with" +"<strong>"+ Utils.getEth(f[2]) +"</strong>!</p>").show();
-
+              }else {
+                $("#after-auction").hide();
+                $("#final-result-sec").hide();
+                $("#wrong").append("NO ONE CLAIM!!!").show();
+              }
             })
-            i.escrowInfo.call(productId).then(function(f) {
 
+            i.escrowInfo.call(productId).then(function(f) {
+            if(parseInt(f[0]) != 0){
               $("#final-result-sec").append('<p><strong>&nbsp&nbspADDRESSES FOR THIS AUCTION:</strong></p><p>&nbsp&nbsp'+ f[0]+ '------------------------> Bidder</p>').show();
               $("#final-result-sec").append('<p>&nbsp&nbsp'+ f[1] +'------------------------> Seller</p>').show();
               $("#final-result-sec").append('<p>&nbsp&nbsp'+ f[2]+'------------------------> The Third Party</p>').show();
@@ -86,7 +96,8 @@ window.Utils = {
                 $("#after-success").show();
                 $("#after-success").html("<strong>Subsequent transaction of auction is completed!</strong>");
                 $("#after-auction").hide();//隐藏后续交易
-              } else {
+              }
+              else {
                   console.log(f[4]);
                       console.log(f[5]);
                 $("#release-count").show();
@@ -94,6 +105,11 @@ window.Utils = {
                 $("#release-count").html( f[4]+ " of 3 agree to transfer eth to seller.");
                 $("#refund-count").html( f[5]+ " of 3 agree to refund eth to bidder.");
               }
+            }else{
+              $("#after-auction").hide();
+              $("#final-result-sec").hide();
+              $("#wrong").append("NO ONE CLAIM!!!").show();
+            }
             });
           });
         } else if (parseInt(p[8]) == 2) {
@@ -101,6 +117,10 @@ window.Utils = {
         } else if (presentTimeInSeconds < p[5]) {
           // 拍卖未开始
           $("#waiting").show();
+            $("#product-auction-end").hide();
+          setInterval(function(){
+            document.getElementById("waiting").innerHTML = Utils.countDownDateBeforeStart(p[5])
+          },1000);
         } else if (presentTimeInSeconds < parseInt(p[6])) {
           $("#bidding").show();//竞标时间！！！！
         } else if (presentTimeInSeconds < (parseInt(p[6]) + 80)) {//claim time
@@ -177,6 +197,26 @@ return 'EXPIRED';
       );
     }
 
+  },
+  countDownDateBeforeStart: function(endingtime) {
+    let now = Utils.getPresentTime();
+    let distance = endingtime - now;
+    if (distance == 0) {
+      //location.reload();
+return 'EXPIRED';
+    }
+    var days = Math.floor(distance / ( 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / ( 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) /  60);
+    var seconds = Math.floor(distance % 60);
+
+    if (distance > 0) {
+      return (
+        'Auction will start in ' +
+        minutes +
+        ' mins ' + seconds + ' sec.' //  days + ' days ' + hours + ' hours ' +
+      );
+    }
   },
   /**
    * 保存产品
@@ -419,6 +459,7 @@ window.App = {
           .toString('hex');
       let productId = $('#product-id').val();
       console.log(sealedBid + ' for ' + productId);
+        //if(sendAmount < parseInt(params['product-price']))
       AuctionSite.deployed().then(function(i) {
         i.bid(parseInt(productId), sealedBid, {
           value: web3.toWei(sendAmount),//直接sendamount

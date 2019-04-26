@@ -316,7 +316,7 @@ return 'EXPIRED';
    * @param {*} id
    */
   buildProduct: function(product, id) {
-    const dom = `<a href="product.html?Id=${id}" class="blogpost" type="${product[2]}">
+    const dom = `<a href="item.html?Id=${id}" class="blogpost" type="${product[2]}">
                     <div class="image">
                       <img src="${config.ipfs.base}${product[3]}" class="image1" />
                     </div>

@@ -114,11 +114,11 @@ a {
 }
 
 #product-details-page .bid-details,
-#product-details-page #product-desc {
+#product-details-page #detailed-info {
   padding: 2em;
 }
 
-#product-details-page #product-image {
+#product-details-page #picture {
   padding: 2em 1em;
   /*border: 1px solid #b2bcc8;*/
   border-radius: 10px;
@@ -170,7 +170,7 @@ a {
   z-index: 1;
 }
 
-#product-details-page #product-desc {
+#product-details-page #detailed-info {
   padding: 2em;
 }
 

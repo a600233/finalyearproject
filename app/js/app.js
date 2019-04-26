@@ -35,14 +35,14 @@ window.Utils = {
             // do stuff with this chunk of data
             content += chunk.toString();
             console.log(content);
-            $("#product-desc").append("<br><div style=\"text-align:center;font-size: 30px;\">" + content + "</div>");
+            $("#detailed-info").append("<br><div style=\"text-align:center;font-size: 30px; padding: 0;margin-bottom: 100px;\">" + content + "</div>");
           });
         });
         // bids
         const msg = localStorage.getItem('BidMsg' + productId);
          msg && $("#bid-msg").append(msg).show();
         // 产品图片
-        $("#product-image").append("<img src='" + config.ipfs.base + p[3] + "' />");
+        $("#picture").append("<img src='" + config.ipfs.base + p[3] + "' />");
         // 产品价格
         $("#product-price").html(Utils.getEth(p[7]));
         // 产品名称
@@ -345,7 +345,7 @@ window.App = {
 
     var reader;//到每个方法里
 
-    $('#product-image').change(function(event) {
+    $('#picture').change(function(event) {
       //onsole.log(test1); for test
       const file = event.target.files[0];
       reader = new window.FileReader();
@@ -380,7 +380,7 @@ window.App = {
           .then(function(f) {
             $('#warning').show();
             $('#warning').html(
-              'The auction has been finalized!',
+              'The auction has been declared the end!',
             );
             console.log(f);
             location.reload();
@@ -398,7 +398,7 @@ window.App = {
 
     if ($('#product-details').length > 0) {
       console.log('Search Params = ' + new URLSearchParams(window.location));
-      let productId = new URLSearchParams(window.location.search).get('Id');
+      let productId = new URLSearchParams(window.location.search).get('Id');//itemID
       Utils.renderProductDetails(productId);
     }
 

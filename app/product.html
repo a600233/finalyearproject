@@ -41,15 +41,15 @@
       <input type="hidden" name="product-id" id="product-id" />
       <button type="submit" class="btn form-submit">Declare the End</button>
     </form>
-    <div id="product-status"></div>
+    <div id="item-on-site"></div>
     <div class="container">
       <div class="row" id="product-details">
         <div style="display: none; text-align: center;" class="alert alert-success" id="successful"></div>
         <div style="display: none; text-align: center;" class="alert alert-danger alert-dismissable" id="wrong"></div>
         <div style="display: none; text-align: center;" class="alert alert-warning alert-dismissable" id="warning"></div>
-        <div class="col-sm-12 product-info">
-          <div class="col-sm-4 product-info-left">
-            <div id="product-image"></div>
+        <div class="col-sm-12 item-info">
+          <div class="col-sm-4 item-info-left">
+            <div id="picture"></div>
             <div id="product-name" style="text-align:center; color: #000000;;margin-top: 0;margin-bottom: 1em;font-size:32px;position:relative;font-family: Helvetica, Arial, sans-serif;"></div>
             <div id="product-auction-end" style="background-image: -moz-linear-gradient(top,#b8b0af 0%,#f2ecea 100%);
 background-image: -webkit-linear-gradient(top,#b8b0af 0%,#f2ecea 100%);
@@ -60,7 +60,7 @@ background-image: linear-gradient(top,#b8b0af 0%,#f2ecea 100%);
 -webkit-text-fill-color: transparent;
 position:relative;font-size:1.3em;padding: 2px;font-family: 'Yantramanav', sans-serif;font-weight:900;text-align:center;"></div>
           </div>
-          <div class="col-sm-8 product-info-right">
+          <div class="col-sm-8 item-info-right">
             <h3>Starting Price: <span id="product-price"></span></h3>
             <div id="waiting" style="display:none;font-size:40px;margin:40px">The auction hasn't started yet!</div>
               <div id="claim-over" style="display:none;font-size:40px;margin:40px">Time out for claim!</div>
@@ -99,7 +99,7 @@ position:relative;font-size:1.3em;padding: 2px;font-family: 'Yantramanav', sans-
         <div style="display: none;float: left; margin-top: 20px;" class="alert alert-success" id="bid-msg"></div>
         <div style="display: none;float: left; margin-top: 50px;border-radius: 6px;" class="alert-warning alert-dismissable" id="final-result-sec"><p></p><strong>&nbsp&nbspCongratulation! EOA! </strong><p></p></div>
         <div style="display: none;float: left; margin-top: 20px;" class="alert alert-danger alert-dismissable" id="final-result-fai"><strong>So Sorry!</strong></div>
-        <div id="product-desc" class="col-sm-12" style=" margin-top: 16px">
+        <div id="detailed-info" class="col-sm-12" style=" margin-top: 16px">
           <div id="after-auction" class="col-sm-12">
           <div style="display: none;" id="thrid-party">
           <h1>Subsequent Transactions: </h1> <br>

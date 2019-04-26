@@ -12,9 +12,9 @@ contract AuctionSite {
     New,
     Used
   }
-  uint public productIndex;
-  mapping(address => mapping(uint => Product)) stores;
-  mapping(uint => address) productIdInStore;
+  uint public productIndex;//产品数量和Id
+  mapping(address => mapping(uint => Product)) stores;//通过卖家产品地址找到产品Id
+  mapping(uint => address) productIdInStore;//产品Id对应到卖家的地址
   mapping(uint => address) productEscrow;
   struct Bid {
     address bidder;
@@ -23,7 +23,7 @@ contract AuctionSite {
     bool revealed;
   }
 //Product[] public products;
-  struct Product {
+  struct Product {//结构体
     // 产品id
     uint id;
     // 产品名字
@@ -59,7 +59,7 @@ contract AuctionSite {
     productIndex = 0;
   }
 
-  // 添加产品到区块链
+  // 添加产品到区块链，无产品Id
   function addProduct(
     string _name,
     string _categories,
@@ -71,7 +71,7 @@ contract AuctionSite {
     uint _productCondition
   ) public {
     require(_startTime < _endTime);
-    productIndex += 1;
+    productIndex += 1;//产品Id自加1
     Product memory product = Product(
       productIndex,
       _name,
@@ -92,7 +92,7 @@ contract AuctionSite {
     productIdInStore[productIndex] = msg.sender;
   }
 
-  // 根据产品ID获取产品详情
+  // 根据ID获取产品详情
   function getProductDetail(uint _productId) view public returns(
     uint,
     string,

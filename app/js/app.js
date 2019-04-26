@@ -205,6 +205,7 @@ return 'EXPIRED';
     let endTime =
       startTime + auctionDuration;
 
+    if(endTime >= Utils.getPresentTime()){
     AuctionSite.deployed().then(function(i) {
       i.addProduct(
         params['product-name'],
@@ -220,11 +221,11 @@ return 'EXPIRED';
           gas: 666666,
         },
       ).then(function(f) {
-        $('#successful-list').show();
-        $('#successful-list').html('Your auction was hold successfully!');
-        setTimeout(() => {
-          location.href = './index.html';
-        }, 1500);
+            $('#successful-list').show();
+            $('#successful-list').html('Your auction was hold successfully!');
+            setTimeout(() => {
+              location.href = './index.html';
+            }, 1500);
       }).catch(err => {
         reject(err);
         $('#wrong-list').show();
@@ -233,6 +234,10 @@ return 'EXPIRED';
         );
       });
     });
+    }else {
+    $('#product-auction-start').val('');//时间不对自动清零
+  alert("TIME FORMAT ERROR!!!");//提示错误
+  }
   },
   /**
    * 保存图片到ipfs

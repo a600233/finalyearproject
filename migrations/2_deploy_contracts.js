@@ -1,5 +1,5 @@
-var EcommerceStore = artifacts.require("./EcommerceStore.sol");
+var AuctionSite = artifacts.require("./AuctionSite.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(EcommerceStore);
+  deployer.deploy(AuctionSite);
 };

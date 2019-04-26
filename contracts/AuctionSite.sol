@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 import "contracts/Escrow.sol";
 
-contract EcommerceStore {
+contract AuctionSite {
   enum ProductStatus {
     Open,
     Sold,
@@ -55,7 +55,7 @@ contract EcommerceStore {
     mapping(address => mapping(bytes32 => Bid)) bids;
   }
 
-  function EcommerceStore() public {
+  function AuctionSite() public {
     productIndex = 0;
   }
 

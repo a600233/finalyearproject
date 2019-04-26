@@ -3,10 +3,10 @@ import '../css/product.css';
 
 import Web3 from 'web3';
 import { default as contract } from 'truffle-contract';
-import ecommerce_store_artifacts from '../../build/contracts/EcommerceStore.json';
+import auction_site_artifacts from '../../build/contracts/AuctionSite.json';
 import config from './config';
 
-var EcommerceStore = contract(ecommerce_store_artifacts);
+var AuctionSite = contract(auction_site_artifacts);
 
 const ipfsAPI = require('ipfs-api');
 const ethUtil = require('ethereumjs-util');
@@ -23,7 +23,7 @@ window.Utils = {
    * @param {String} productId 产品ID
    */
   renderProductDetails: function(productId) {
-    EcommerceStore.deployed().then(function(i) {
+    AuctionSite.deployed().then(function(i) {
       i.getProductDetail.call(productId).then(function(p) {
         console.log(p);
         let content = "";
@@ -67,7 +67,7 @@ window.Utils = {
         $("#claim, #bidding, #declare-end, #after-sale").hide();
         let presentTimeInSeconds = Utils.getPresentTime();
         if (parseInt(p[8]) == 1) {//Sold
-          EcommerceStore.deployed().then(function(i) {
+          AuctionSite.deployed().then(function(i) {
             $("#thrid-party").show();
             i.highestBidderInfo.call(productId).then(function(f) {
 
@@ -205,7 +205,7 @@ return 'EXPIRED';
     let endTime =
       startTime + auctionDuration;
 
-    EcommerceStore.deployed().then(function(i) {
+    AuctionSite.deployed().then(function(i) {
       i.addProduct(
         params['product-name'],
         params['product-categories'],
@@ -296,7 +296,7 @@ return 'EXPIRED';
   },
   // 渲染产品列表
   renderStore: function() {
-    EcommerceStore.deployed().then(function(i) {
+    AuctionSite.deployed().then(function(i) {
       i.productIndex().then((number) => {
         $('#item-num').html('' + number);
         for (let j = number-1; j >= 0; j--) {//根据产品id，和产品数量来遍历获取列表的
@@ -339,7 +339,7 @@ window.App = {
   start: function() {
     var self = this;
 
-    EcommerceStore.setProvider(web3.currentProvider);
+    AuctionSite.setProvider(web3.currentProvider);
     Utils.renderStore();
     Utils.renderCategories();
 
@@ -373,7 +373,7 @@ window.App = {
     $('#declare-end').submit(function(event) {
       $('#successful').hide();
       let productId = $('#product-id').val();
-      EcommerceStore.deployed().then(function(i) {
+      AuctionSite.deployed().then(function(i) {
         i.finishAuction(parseInt(productId), {
           from: web3.eth.accounts[0],
         })
@@ -414,7 +414,7 @@ window.App = {
           .toString('hex');
       let productId = $('#product-id').val();
       console.log(sealedBid + ' for ' + productId);
-      EcommerceStore.deployed().then(function(i) {
+      AuctionSite.deployed().then(function(i) {
         i.bid(parseInt(productId), sealedBid, {
           value: web3.toWei(sendAmount),//直接sendamount
           from: web3.eth.accounts[0],
@@ -440,7 +440,7 @@ window.App = {
       let amount = $('#actual-amount').val();
       let secretPhraseRev = $('#secret-phrase-revealt').val();
       let productId = $('#product-id').val();
-      EcommerceStore.deployed().then(function(i) {
+      AuctionSite.deployed().then(function(i) {
         i.revealBid(
           parseInt(productId),
           web3.toWei(amount).toString(),
@@ -461,7 +461,7 @@ window.App = {
     });
     $("#for-seller").click(function() {//给钱
       let productId = new URLSearchParams(window.location.search).get('Id');
-      EcommerceStore.deployed().then(function(f) {
+      AuctionSite.deployed().then(function(f) {
         $("#warning").html("Please be patient for a moment.").show();
         console.log("productId:");
         console.log(parseInt(productId));
@@ -479,7 +479,7 @@ window.App = {
     });
     $("#for-bidder").click(function() {//退款给
       let productId = new URLSearchParams(window.location.search).get('Id');
-      EcommerceStore.deployed().then(function(f) {
+      AuctionSite.deployed().then(function(f) {
         $("#warning").html("Please be patient for a moment.").show();
         console.log("productId:");
         console.log(parseInt(productId));

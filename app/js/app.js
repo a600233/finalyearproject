@@ -516,7 +516,7 @@ window.App = {
           location.reload();
         }).catch(function(e) {
           console.log(e);
-          alert("Sorry, This is not your auction! ");
+          alert("Sorry, there is an error, please CHECK this auction again!");
           $('#wrong').show();
           $('#wrong').html(
             'ERROR IN RELEASE FUNDS!',

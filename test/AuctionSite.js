@@ -8,7 +8,7 @@ const web3 = new Web3(
 
 contract('AuctionSite', async accounts => {
   // 确保能获取到默认的eth钱包地址
-  it('should return default account', async () => {
+  it('should return default account address', async () => {
     const code = web3.eth.getCode(accounts[0]);
     assert.equal(code, '0x');
   });
@@ -18,10 +18,10 @@ contract('AuctionSite', async accounts => {
     assert.equal(balance > 0, true);
   });
   // 确保可以成功添加产品，并可获取到产品详情
-  it('should return product detail when add product to blockchain', async () => {
+  it('should return item detail when add item to blockchain', async () => {
     const instance = await AuctionSite.deployed();
     const name = 'EVO10';
-    const categories = 'Cell Phones & Accessories';
+    const categories = 'Automotive';
     await instance.addProduct(
       name,
       categories,
@@ -34,18 +34,18 @@ contract('AuctionSite', async accounts => {
       { from: accounts[9] },
     );
     const productDetail = await instance.getProductDetail(1);
-    assert.equal(productDetail[1], name);
-    assert.equal(productDetail[2], categories);
+    assert.equal(productDetail[1], 'EVO10');
+    assert.equal(productDetail[2], 'Automotive');
     assert.equal(productDetail[8], 0);
   });
   // 确保可以获取到产品数量
-  it('should return product count === 1', async () => {
+  it('should return right number of items', async () => {
     const instance = await AuctionSite.deployed();
     const productCount = await instance.productIndex();
     assert.equal(productCount, 1);
   });
   // 确保用户可以正常投标
-  it('should return true when bid', async () => {
+  it('should return true when make a bid', async () => {
     const instance = await AuctionSite.deployed();
     const secretPhraseBid = 2;
     const sealedBid = '0x' + ethUtil .keccak256(web3.toWei(2, 'ether') + secretPhraseBid).toString('hex');

@@ -69,13 +69,11 @@ contract Escrow {
 
   // 向卖方发放金额
   function releaseAmountToSeller(address caller) public {
-
-    if ((caller == buyer
-      ||caller == seller
-        || caller == arbiter)
-          &&  refundAmount[caller] != true
-          && fundsDisbursed != true) {
-            refundAmount[caller] = true;
+    require(!fundsDisbursed);
+    require(caller == seller || caller == buyer || caller == arbiter);
+    require(!refundAmount[caller]);
+    if (!releaseAmount[caller]) {
+            releaseAmount[caller] = true;
                releaseCount += 1;
     }
     if (releaseCount == 2) {
@@ -86,11 +84,10 @@ contract Escrow {
 
   // 退款金额给买方
   function refundAmountToBuyer(address caller) public {
-    if ((caller == buyer
-      ||caller == seller
-        || caller == arbiter)
-          &&  refundAmount[caller] != true
-          && fundsDisbursed != true) {
+    require(!fundsDisbursed);
+    require(caller == seller || caller == buyer || caller == arbiter);
+    require(!refundAmount[caller]);
+    if (!refundAmount[caller]) {
             refundAmount[caller] = true;
                refundCount += 1;
     }

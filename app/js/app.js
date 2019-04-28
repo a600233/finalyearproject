@@ -108,7 +108,7 @@ window.Utils = {
             }else{
               $("#after-auction").hide();
               $("#final-result-sec").hide();
-              $("#wrong").append("NO ONE CLAIM!!!").show();
+              $("#wrong").append(" AUCTION CLOSED!").show();
             }
             });
           });
@@ -516,6 +516,7 @@ window.App = {
           location.reload();
         }).catch(function(e) {
           console.log(e);
+          alert("Sorry, This is not your auction! ");
           $('#wrong').show();
           $('#wrong').html(
             'ERROR IN RELEASE FUNDS!',
@@ -534,6 +535,7 @@ window.App = {
           location.reload();
         }).catch(function(e) {
           console.log(e);
+          alert("Sorry, This is not your auction! ");
           $('#wrong').show();
           $('#wrong').html(
             'ERROR IN RETERUNING FUNDS!',

@@ -16,6 +16,7 @@ contract Escrow {
   mapping (address => bool) refundAmount;//对应不同角色是否同退款
   uint public refundCount;
 
+
   event CreateEscrow(
     uint _productId,
     address _buyer,
@@ -71,8 +72,8 @@ contract Escrow {
   function releaseAmountToSeller(address caller) public {
     require(!fundsDisbursed);
     require(caller == seller || caller == buyer || caller == arbiter);
-    require(!refundAmount[caller]);
-    if (!releaseAmount[caller]) {
+    require(releaseAmount[caller]!= true);
+    if (releaseAmount[caller] != true) {
             releaseAmount[caller] = true;
                releaseCount += 1;
     }
@@ -86,9 +87,9 @@ contract Escrow {
   function refundAmountToBuyer(address caller) public {
     require(!fundsDisbursed);
     require(caller == seller || caller == buyer || caller == arbiter);
-    require(!refundAmount[caller]);
-    if (!refundAmount[caller]) {
-            refundAmount[caller] = true;
+    require(releaseAmount[caller]!= true);
+    if (releaseAmount[caller] != true) {
+            releaseAmount[caller] = true;
                refundCount += 1;
     }
     if (refundCount == 2) {

@@ -201,9 +201,9 @@ return 'EXPIRED';
   countDownDateBeforeStart: function(endingtime) {
     let now = Utils.getPresentTime();
     let distance = endingtime - now;
-    if (distance == 0) {
-      //location.reload();
-return 'EXPIRED';
+    if (distance <= 0) {
+      //clearInterval(countDownDateBeforeStart);
+      return 'EXPIRED';
     }
     var days = Math.floor(distance / ( 60 * 60 * 24));
     var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / ( 60 * 60));
@@ -535,7 +535,7 @@ window.App = {
           location.reload();
         }).catch(function(e) {
           console.log(e);
-          alert("Sorry, This is not your auction! ");
+          alert("Sorry, there is an error, please CHECK this auction again!");
           $('#wrong').show();
           $('#wrong').html(
             'ERROR IN RETERUNING FUNDS!',

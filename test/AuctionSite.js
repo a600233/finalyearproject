@@ -55,6 +55,6 @@ contract('AuctionSite', async accounts => {
       from: accounts[9],
       gas: 233333,
     });
-    assert.equal(result.receipt.status, true);
+    assert.equal(result.receipt.status, true);//bid的方法就是投标完成返回True
   });
 });

@@ -39,7 +39,7 @@ window.Utils = {
           });
         });
         // bids
-        const msg = localStorage.getItem('BidMsg' + productId);
+        const msg = localStorage.getItem('BidMsg' + productId);//将产品编号存到存储到key字段
          msg && $("#bid-msg").append(msg).show();
         // 产品图片
         $("#picture").append("<img src='" + config.ipfs.base + p[3] + "' />");
